@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard - Smart Cargo</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+
+        .goods-photo {
+            width: 100px;
+            height: 75px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .view-photo-btn {
+            display: inline-block;
+            padding: 6px 10px;
+            background: #f1f5ff;
+            color: #1d4ed8;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .view-photo-btn:hover {
+            background: #dbe7ff;
+        }
+
+        .no-photo {
+            color: #888;
+            font-size: 13px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Navbar -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            Smart Cargo Admin
+        </div>
+
+        <div class="nav-links">
+
+            <a href="{{ url_for('home') }}">
+                Home
+            </a>
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- Admin Dashboard -->
+
+    <section class="section">
+
+        <h2>Admin Dashboard</h2>
+
+        <p class="section-intro">
+            Manage customers, drivers and transportation bookings.
+        </p>
+
+
+        <!-- Dashboard Cards -->
+
+        <div class="service-container">
+
+            <div class="service-card">
+
+                <h3>👥 Customers</h3>
+
+                <p>
+                    Total registered customers
+                </p>
+
+                <h2>
+                    {{ customer_count }}
+                </h2>
+
+            </div>
+
+
+            <div class="service-card">
+
+                <h3>🚚 Drivers</h3>
+
+                <p>
+                    Total registered drivers
+                </p>
+
+                <h2>
+                    {{ driver_count }}
+                </h2>
+
+            </div>
+
+
+            <div class="service-card">
+
+                <h3>📋 Bookings</h3>
+
+                <p>
+                    Total transportation bookings
+                </p>
+
+                <h2>
+                    {{ booking_count }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- Admin Management Buttons -->
+
+        <div style="
+            text-align:center;
+            margin-top:40px;
+            display:flex;
+            justify-content:center;
+            gap:15px;
+            flex-wrap:wrap;
+        ">
+
+            <a href="{{ url_for('admin_drivers') }}" class="btn primary-btn">
+                🚚 Driver Availability
+            </a>
+
+            <a href="{{ url_for('admin_all_bookings') }}" class="btn primary-btn">
+                📋 All Bookings
+            </a>
+
+            <a href="{{ url_for('admin_customers') }}" class="btn primary-btn">
+                👤 Customer Management
+            </a>
+
+        </div>
+
+
+        <!-- Pending Bookings -->
+
+        <h2 style="margin-top:60px;">
+            Pending Booking Requests
+        </h2>
+
+
+        {% if bookings %}
+
+        <div style="overflow-x:auto; margin-top:30px;">
+
+            <table style="width:100%; border-collapse:collapse;">
+
+                <tr style="background:#f5f8ff;">
+
+                    <th style="padding:12px;">
+                        ID
+                    </th>
+
+                    <th style="padding:12px;">
+                        Customer
+                    </th>
+
+                    <th style="padding:12px;">
+                        Pickup
+                    </th>
+
+                    <th style="padding:12px;">
+                        Drop
+                    </th>
+
+                    <th style="padding:12px;">
+                        Goods
+                    </th>
+
+                    <th style="padding:12px;">
+                        Goods Photo
+                    </th>
+
+                    <th style="padding:12px;">
+                        Weight
+                    </th>
+
+                    <th style="padding:12px;">
+                        Vehicle
+                    </th>
+
+                    <th style="padding:12px;">
+                        Action
+                    </th>
+
+                </tr>
+
+
+                {% for booking in bookings %}
+
+                <tr>
+
+                    <td style="padding:12px;">
+                        {{ booking.booking_id }}
+                    </td>
+
+                    <td style="padding:12px;">
+                        {{ booking.customer_name }}
+                    </td>
+
+                    <td style="padding:12px;">
+                        {{ booking.pickup_location }}
+                    </td>
+
+                    <td style="padding:12px;">
+                        {{ booking.drop_location }}
+                    </td>
+
+                    <td style="padding:12px;">
+                        {{ booking.goods_type }}
+                    </td>
+
+
+                    <!-- GOODS PHOTO -->
+
+                    <td style="padding:12px;">
+
+                        {% if booking.goods_photo %}
+
+                            <img
+                                src="{{ url_for('static', filename='uploads/' + booking.goods_photo) }}"
+                                class="goods-photo"
+                                alt="Goods Photo"
+                            >
+
+                            <a
+                                href="{{ url_for('static', filename='uploads/' + booking.goods_photo) }}"
+                                target="_blank"
+                                class="view-photo-btn"
+                            >
+                                📷 View Photo
+                            </a>
+
+                        {% else %}
+
+                            <span class="no-photo">
+                                No Photo
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td style="padding:12px;">
+                        {{ booking.weight_kg }} KG
+                    </td>
+
+                    <td style="padding:12px;">
+                        {{ booking.vehicle_type }}
+                    </td>
+
+
+                    <!-- ACTION -->
+
+                    <td style="padding:12px;">
+
+                        <a
+                            href="{{ url_for('approve_booking', booking_id=booking.booking_id) }}"
+                            class="btn primary-btn"
+                        >
+                            Approve
+                        </a>
+
+                        <br><br>
+
+                        <a
+                            href="{{ url_for('reject_booking', booking_id=booking.booking_id) }}"
+                            class="btn secondary-btn"
+                        >
+                            Reject
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="service-card" style="max-width:500px; margin:30px auto;">
+
+            <h3>✅ No Pending Bookings</h3>
+
+            <p>
+                There are currently no booking requests waiting for verification.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <h3>
+            Smart Cargo & Driver Management System
+        </h3>
+
+        <p>
+            Admin Management Panel
+        </p>
+
+        <p class="copyright">
+            © 2026 Smart Cargo. All Rights Reserved.
+        </p>
+
+    </footer>
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+<script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+</body>
+
+</html>

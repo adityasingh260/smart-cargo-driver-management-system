@@ -1,0 +1,17 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Secrets
+.env
+
+# Uploaded customer goods photos
+static/uploads/*
+
+# Local database backups
+*.sql

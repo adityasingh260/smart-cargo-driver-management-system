@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Driver Availability - Smart Cargo</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .driver-page {
+            padding: 50px 6%;
+            min-height: 70vh;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .driver-table-container {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+        }
+
+        .driver-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        .driver-table th {
+            background: #f3f7ff;
+            color: #1f3c88;
+            padding: 16px 12px;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 2px solid #e5eaf5;
+        }
+
+        .driver-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #eeeeee;
+            color: #444;
+            font-size: 14px;
+        }
+
+        .driver-table tr:hover {
+            background: #f9fbff;
+        }
+
+        .driver-name {
+            font-weight: 600;
+            color: #222;
+        }
+
+        .vehicle-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .online {
+            background: #e8f8ee;
+            color: #16833b;
+        }
+
+        .offline {
+            background: #f1f1f1;
+            color: #666;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .online .status-dot {
+            background: #20b957;
+        }
+
+        .offline .status-dot {
+            background: #999;
+        }
+
+        .rating {
+            font-weight: 600;
+        }
+
+        .area {
+            color: #555;
+        }
+
+        .back-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 11px 22px;
+            border-radius: 8px;
+            background: #1f3c88;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #162d68;
+            transform: translateY(-2px);
+        }
+
+        .driver-count {
+            margin-top: 25px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+    <!-- Navbar -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            Smart Cargo Admin
+        </div>
+
+        <div class="nav-links">
+
+            <a href="{{ url_for('admin_dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- Driver Availability Page -->
+
+    <section class="driver-page">
+
+        <div class="page-header">
+
+            <h1>🚚 Driver Availability</h1>
+
+            <p>
+                Monitor registered drivers and their current availability.
+            </p>
+
+        </div>
+
+
+        <!-- Driver Table -->
+
+        <div class="driver-table-container">
+
+            <table class="driver-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Driver</th>
+
+                        <th>Mobile</th>
+
+                        <th>Area</th>
+
+                        <th>Vehicle</th>
+
+                        <th>Vehicle No.</th>
+
+                        <th>Capacity</th>
+
+                        <th>Rating</th>
+
+                        <th>Status</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for driver in drivers %}
+
+                    <tr>
+
+                        <td>
+
+                            <span class="driver-name">
+                                {{ driver.name }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            {{ driver.mobile }}
+                        </td>
+
+
+                        <td>
+
+                            <span class="area">
+                                📍 {{ driver.current_area }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="vehicle-name">
+                                {{ driver.vehicle_type }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            {{ driver.vehicle_number }}
+                        </td>
+
+
+                        <td>
+                            {{ driver.capacity_kg }} KG
+                        </td>
+
+
+                        <td>
+
+                            <span class="rating">
+                                ⭐ {{ driver.rating }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if driver.availability == 'Online' %}
+
+                            <span class="status online">
+
+                                <span class="status-dot"></span>
+
+                                Online
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="status offline">
+
+                                <span class="status-dot"></span>
+
+                                Offline
+
+                            </span>
+
+                            {% endif %}
+
+
+                            {% if driver.availability == "Online" %}
+
+                            <a href="{{ url_for('admin_update_driver_status',
+            driver_id=driver.driver_id,
+            status='Offline') }}" class="status-btn offline-btn">
+                                Set Offline
+                            </a>
+
+                            {% else %}
+
+                            <a href="{{ url_for('admin_update_driver_status',
+            driver_id=driver.driver_id,
+            status='Online') }}" class="status-btn online-btn">
+                                Set Online
+                            </a>
+
+                            {% endif %}
+
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- Driver Count -->
+
+        <div class="driver-count">
+
+            Total Registered Drivers:
+            <strong>{{ drivers|length }}</strong>
+
+        </div>
+
+
+        <!-- Back Button -->
+
+        <div class="back-section">
+
+            <a href="{{ url_for('admin_dashboard') }}" class="back-btn">
+
+                ← Back to Admin Dashboard
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <h3>
+            Smart Cargo & Driver Management System
+        </h3>
+
+        <p>
+            Admin Management Panel
+        </p>
+
+        <p class="copyright">
+            © 2026 Smart Cargo. All Rights Reserved.
+        </p>
+
+    </footer>
+
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+<script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Cargo & Driver Management System</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        /* =====================================================
+           HERO VEHICLE ANIMATION
+           ===================================================== */
+
+        .hero-vehicle {
+            width: 100%;
+            max-width: 850px;
+            height: 150px;
+            margin: 45px auto 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Road */
+
+        .road {
+            position: absolute;
+            left: 0;
+            bottom: 18px;
+            width: 100%;
+            height: 4px;
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .road::before {
+            content: "";
+            position: absolute;
+            top: 1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: repeating-linear-gradient(90deg,
+                    #2563eb 0px,
+                    #2563eb 45px,
+                    transparent 45px,
+                    transparent 85px);
+            animation: roadMove 1.5s linear infinite;
+        }
+
+        /* Truck */
+
+        .truck {
+            position: absolute;
+            bottom: 22px;
+            left: -180px;
+            width: 150px;
+            height: 75px;
+            animation: truckMove 8s linear infinite;
+            filter:
+                drop-shadow(0 8px 10px rgba(29, 78, 216, 0.18)) drop-shadow(0 0 10px rgba(37, 99, 235, 0.12));
+        }
+
+        /* Cargo body */
+
+        .truck-body {
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 105px;
+            height: 48px;
+            border-radius: 8px 4px 4px 8px;
+            background: linear-gradient(135deg,
+                    #2563eb,
+                    #1d4ed8);
+            box-shadow:
+                inset 0 -5px 0 rgba(0, 0, 0, 0.08),
+                0 0 15px rgba(37, 99, 235, 0.22);
+        }
+
+        /* Cargo box */
+
+        .cargo-box {
+            position: absolute;
+            left: 10px;
+            top: 14px;
+            width: 82px;
+            height: 34px;
+            border-radius: 4px;
+            background: linear-gradient(135deg,
+                    #60a5fa,
+                    #3b82f6);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+        }
+
+        .cargo-box::after {
+            content: "CARGO";
+            position: absolute;
+            top: 8px;
+            left: 19px;
+            color: white;
+            font-size: 9px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Driver cabin */
+
+        .truck-cabin {
+            position: absolute;
+            right: 0;
+            top: 22px;
+            width: 52px;
+            height: 34px;
+            background: linear-gradient(135deg,
+                    #1e40af,
+                    #1d4ed8);
+            border-radius: 4px 9px 5px 3px;
+        }
+
+        /* Window */
+
+        .truck-window {
+            position: absolute;
+            right: 7px;
+            top: 27px;
+            width: 27px;
+            height: 15px;
+            background: #dbeafe;
+            border-radius: 3px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* Front light */
+
+        .truck-light {
+            position: absolute;
+            right: -2px;
+            top: 45px;
+            width: 5px;
+            height: 7px;
+            background: #facc15;
+            border-radius: 2px;
+            box-shadow: 0 0 8px rgba(250, 204, 21, 0.8);
+        }
+
+        /* Wheels */
+
+        .wheel {
+            position: absolute;
+            bottom: 0;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #111827;
+            border: 4px solid #334155;
+            box-shadow: 0 0 5px rgba(15, 23, 42, 0.35);
+            animation: wheelRotate 0.7s linear infinite;
+        }
+
+        .wheel::after {
+            content: "";
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            background: #94a3b8;
+            border-radius: 50%;
+            top: 5px;
+            left: 5px;
+        }
+
+        .wheel-one {
+            left: 20px;
+        }
+
+        .wheel-two {
+            right: 17px;
+        }
+
+        /* Speed lines */
+
+        .speed-line {
+            position: absolute;
+            height: 2px;
+            background: #60a5fa;
+            border-radius: 5px;
+            opacity: 0;
+            animation: speedLine 1.2s linear infinite;
+        }
+
+        .speed-one {
+            width: 55px;
+            bottom: 75px;
+            left: 10%;
+        }
+
+        .speed-two {
+            width: 35px;
+            bottom: 95px;
+            left: 25%;
+            animation-delay: 0.3s;
+        }
+
+        .speed-three {
+            width: 45px;
+            bottom: 55px;
+            left: 35%;
+            animation-delay: 0.6s;
+        }
+
+        /* =====================================================
+           KEYFRAMES
+           ===================================================== */
+
+        @keyframes truckMove {
+
+            0% {
+                left: -180px;
+            }
+
+            100% {
+                left: calc(100% + 30px);
+            }
+        }
+
+        @keyframes wheelRotate {
+
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes roadMove {
+
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: -85px 0;
+            }
+        }
+
+        @keyframes speedLine {
+
+            0% {
+                transform: translateX(0);
+                opacity: 0;
+            }
+
+            30% {
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+        }
+
+        /* Mobile */
+
+        @media (max-width: 768px) {
+
+            .hero-vehicle {
+                max-width: 95%;
+                height: 120px;
+                margin-top: 35px;
+            }
+
+            .truck {
+                transform: scale(0.85);
+                transform-origin: bottom left;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =====================================================
+         NAVBAR
+         ===================================================== -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            Smart Cargo
+        </div>
+
+        <div class="nav-links">
+
+            <a href="#home">Home</a>
+
+            <a href="#services">Services</a>
+
+            <a href="#how-it-works">How It Works</a>
+
+            <a href="#about">About</a>
+
+            <a href="{{ url_for('login') }}">Login</a>
+
+        </div>
+
+        <button id="theme-toggle" class="theme-toggle">
+            🌙
+        </button>
+
+    </nav>
+
+
+    <!-- =====================================================
+         HERO SECTION
+         ===================================================== -->
+
+    <section class="hero" id="home">
+
+        <div class="hero-content">
+
+            <h1 class="hero-title">
+                Smart Cargo & Driver
+                <span>Management System</span>
+            </h1>
+
+            <p>
+                A smart and reliable platform to connect customers
+                with suitable cargo vehicles and drivers.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="{{ url_for('login') }}" class="btn primary-btn">
+                    🚚 Book a Vehicle
+                </a>
+
+                <a href="#how-it-works" class="btn secondary-btn">
+                    Learn More
+                </a>
+
+            </div>
+
+
+            <!-- =================================================
+                 ANIMATED TRUCK
+                 ================================================= -->
+
+            <div class="hero-vehicle">
+
+                <!-- Speed Lines -->
+
+                <div class="speed-line speed-one"></div>
+                <div class="speed-line speed-two"></div>
+                <div class="speed-line speed-three"></div>
+
+
+                <!-- Road -->
+
+                <div class="road"></div>
+
+
+                <!-- Truck -->
+
+                <div class="truck">
+
+                    <!-- Cargo Body -->
+
+                    <div class="truck-body">
+
+                        <div class="cargo-box"></div>
+
+                    </div>
+
+
+                    <!-- Cabin -->
+
+                    <div class="truck-cabin"></div>
+
+
+                    <!-- Window -->
+
+                    <div class="truck-window"></div>
+
+
+                    <!-- Front Light -->
+
+                    <div class="truck-light"></div>
+
+
+                    <!-- Wheels -->
+
+                    <div class="wheel wheel-one"></div>
+
+                    <div class="wheel wheel-two"></div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SERVICES SECTION
+         ===================================================== -->
+
+    <section class="section" id="services">
+
+        <h2>Our Services</h2>
+
+        <p class="section-intro">
+            Our platform provides simple and efficient solutions
+            for goods transportation.
+        </p>
+
+        <div class="service-container">
+
+            <div class="service-card">
+
+                <h3>🚚 Vehicle Booking</h3>
+
+                <p>
+                    Book a suitable vehicle according to your
+                    cargo requirements.
+                </p>
+
+            </div>
+
+
+            <div class="service-card">
+
+                <h3>💰 Smart Fare Prediction</h3>
+
+                <p>
+                    Get an estimated transportation fare using
+                    machine learning.
+                </p>
+
+            </div>
+
+
+            <div class="service-card">
+
+                <h3>📍 Driver Allocation</h3>
+
+                <p>
+                    Connect with a suitable and nearby available
+                    driver for your cargo.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         HOW IT WORKS
+         ===================================================== -->
+
+    <section class="section how-section" id="how-it-works">
+
+        <h2>How It Works</h2>
+
+        <div class="steps">
+
+            <div class="step">
+
+                <div class="step-number">
+                    1
+                </div>
+
+                <h3>Book</h3>
+
+                <p>
+                    Enter your cargo and transportation details.
+                </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    2
+                </div>
+
+                <h3>Verify</h3>
+
+                <p>
+                    The booking request is verified by the admin.
+                </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    3
+                </div>
+
+                <h3>Connect</h3>
+
+                <p>
+                    A suitable nearby driver is selected and notified.
+                </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    4
+                </div>
+
+                <h3>Deliver</h3>
+
+                <p>
+                    Track your cargo until successful delivery.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ABOUT SECTION
+         ===================================================== -->
+
+    <section class="section about" id="about">
+
+        <h2>About Smart Cargo</h2>
+
+        <p>
+            Smart Cargo & Driver Management System is designed to
+            make goods transportation more convenient, transparent,
+            and efficient. The system combines online booking,
+            machine-learning-based fare prediction, admin verification,
+            and suitable driver allocation in one platform.
+        </p>
+
+    </section>
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <footer>
+
+        <h3>
+            Smart Cargo & Driver Management System
+        </h3>
+
+        <p>
+            Smart solution for modern goods transportation.
+        </p>
+
+        <p class="copyright">
+            © 2026 Smart Cargo. All Rights Reserved.
+        </p>
+
+    </footer>
+
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+<script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+</body>
+
+</html>

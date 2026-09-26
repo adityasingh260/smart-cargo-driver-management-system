@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>All Bookings - Smart Cargo</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+
+        .booking-page {
+            padding: 50px 6%;
+            min-height: 70vh;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #666;
+        }
+
+        .booking-table-container {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+        }
+
+        .booking-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1250px;
+        }
+
+        .booking-table th {
+            background: #f3f7ff;
+            color: #1f3c88;
+            padding: 15px 12px;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 2px solid #e5eaf5;
+            white-space: nowrap;
+        }
+
+        .booking-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #eeeeee;
+            color: #444;
+            font-size: 14px;
+        }
+
+        .booking-table tr:hover {
+            background: #f9fbff;
+        }
+
+        .booking-id {
+            font-weight: 700;
+            color: #1f3c88;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: #222;
+        }
+
+        .driver-name {
+            font-weight: 500;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .pending {
+            background: #fff4d6;
+            color: #9a6a00;
+        }
+
+        .searching {
+            background: #e8f1ff;
+            color: #2459a6;
+        }
+
+        .accepted {
+            background: #e8f8ee;
+            color: #16833b;
+        }
+
+        .reached {
+            background: #e8f8ee;
+            color: #16833b;
+        }
+
+        .picked {
+            background: #e8f8ee;
+            color: #16833b;
+        }
+
+        .transit {
+            background: #e8f1ff;
+            color: #2459a6;
+        }
+
+        .delivered {
+            background: #dff7e8;
+            color: #08752f;
+        }
+
+        .rejected {
+            background: #ffe8e8;
+            color: #b42318;
+        }
+
+        .waiting {
+            background: #f1edff;
+            color: #6246a8;
+        }
+
+        .unknown {
+            background: #eeeeee;
+            color: #666;
+        }
+
+        .fare {
+            font-weight: 600;
+        }
+
+        .driver-not-assigned {
+            color: #999;
+            font-style: italic;
+        }
+
+        /* =========================
+           GOODS PHOTO
+        ========================= */
+
+        .goods-photo {
+            width: 70px;
+            height: 55px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            display: block;
+            margin-bottom: 7px;
+        }
+
+        .view-photo-btn {
+            display: inline-block;
+            padding: 6px 10px;
+            background: #1f3c88;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .view-photo-btn:hover {
+            background: #162d68;
+        }
+
+        .no-photo {
+            color: #999;
+            font-style: italic;
+        }
+
+        .booking-count {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+        }
+
+        .back-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 11px 22px;
+            border-radius: 8px;
+            background: #1f3c88;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            background: #162d68;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            Smart Cargo Admin
+        </div>
+
+        <div class="nav-links">
+
+            <a href="{{ url_for('admin_dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================
+         ALL BOOKINGS
+    ========================== -->
+
+    <section class="booking-page">
+
+        <div class="page-header">
+
+            <h1>📋 All Bookings</h1>
+
+            <p>
+                View and monitor all transportation bookings.
+            </p>
+
+        </div>
+
+
+        {% if bookings %}
+
+
+        <div class="booking-table-container">
+
+            <table class="booking-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Customer</th>
+
+                        <th>Pickup</th>
+
+                        <th>Drop</th>
+
+                        <th>Goods</th>
+
+                        <th>Weight</th>
+
+                        <th>Vehicle</th>
+
+                        <th>Fare</th>
+
+                        <th>Driver</th>
+
+                        <th>Status</th>
+
+                        <th>Goods Photo</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for booking in bookings %}
+
+
+                    <tr>
+
+
+                        <!-- BOOKING ID -->
+
+                        <td>
+
+                            <span class="booking-id">
+
+                                #{{ booking.booking_id }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- CUSTOMER -->
+
+                        <td>
+
+                            <span class="customer-name">
+
+                                {{ booking.customer_name }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- PICKUP -->
+
+                        <td>
+
+                            📍 {{ booking.pickup_location }}
+
+                        </td>
+
+
+                        <!-- DROP -->
+
+                        <td>
+
+                            📍 {{ booking.drop_location }}
+
+                        </td>
+
+
+                        <!-- GOODS -->
+
+                        <td>
+
+                            {{ booking.goods_type }}
+
+                        </td>
+
+
+                        <!-- WEIGHT -->
+
+                        <td>
+
+                            {{ booking.weight_kg }} KG
+
+                        </td>
+
+
+                        <!-- VEHICLE -->
+
+                        <td>
+
+                            {{ booking.vehicle_type }}
+
+                        </td>
+
+
+                        <!-- FARE -->
+
+                        <td>
+
+                            {% if booking.fare %}
+
+                                <span class="fare">
+
+                                    ₹{{ booking.fare }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="driver-not-assigned">
+
+                                    Not calculated
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- DRIVER -->
+
+                        <td>
+
+                            {% if booking.driver_name %}
+
+                                <span class="driver-name">
+
+                                    🚚 {{ booking.driver_name }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="driver-not-assigned">
+
+                                    Not Assigned
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+
+                            {% if booking.status == 'Pending' %}
+
+                                <span class="status pending">
+
+                                    Pending
+
+                                </span>
+
+
+                            {% elif booking.status == 'Searching for Driver' %}
+
+                                <span class="status searching">
+
+                                    Searching Driver
+
+                                </span>
+
+
+                            {% elif booking.status == 'Accepted' %}
+
+                                <span class="status accepted">
+
+                                    Accepted
+
+                                </span>
+
+
+                            {% elif booking.status == 'Reached Pickup' %}
+
+                                <span class="status reached">
+
+                                    Reached Pickup
+
+                                </span>
+
+
+                            {% elif booking.status == 'Goods Picked' %}
+
+                                <span class="status picked">
+
+                                    Goods Picked
+
+                                </span>
+
+
+                            {% elif booking.status == 'In Transit' %}
+
+                                <span class="status transit">
+
+                                    In Transit
+
+                                </span>
+
+
+                            {% elif booking.status == 'Delivered' %}
+
+                                <span class="status delivered">
+
+                                    Delivered
+
+                                </span>
+
+
+                            {% elif booking.status == 'Rejected' %}
+
+                                <span class="status rejected">
+
+                                    Rejected
+
+                                </span>
+
+
+                            {% elif booking.status == 'Approved - Waiting for Driver' %}
+
+                                <span class="status waiting">
+
+                                    Waiting for Driver
+
+                                </span>
+
+
+                            {% else %}
+
+                                <span class="status unknown">
+
+                                    {{ booking.status }}
+
+                                </span>
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                        <!-- GOODS PHOTO -->
+
+                        <td>
+
+
+                            {% if booking.goods_photo %}
+
+
+                                <img
+
+                                    src="{{ url_for('static',
+                                    filename='uploads/' + booking.goods_photo) }}"
+
+                                    class="goods-photo"
+
+                                    alt="Goods Photo"
+
+
+                                >
+
+
+                                <a
+
+                                    href="{{ url_for('static',
+                                    filename='uploads/' + booking.goods_photo) }}"
+
+                                    target="_blank"
+
+                                    class="view-photo-btn"
+
+                                >
+
+                                    📷 View Photo
+
+                                </a>
+
+
+                            {% else %}
+
+
+                                <span class="no-photo">
+
+                                    No Photo
+
+                                </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- BOOKING COUNT -->
+
+        <div class="booking-count">
+
+            Total Bookings:
+
+            <strong>
+
+                {{ bookings|length }}
+
+            </strong>
+
+        </div>
+
+
+        {% else %}
+
+
+        <!-- NO BOOKINGS -->
+
+        <div
+            class="booking-table-container"
+            style="text-align:center;"
+        >
+
+            <h2>
+                📋 No Bookings Found
+            </h2>
+
+            <p>
+
+                There are currently no transportation bookings.
+
+            </p>
+
+        </div>
+
+
+        {% endif %}
+
+
+        <!-- BACK BUTTON -->
+
+        <div class="back-section">
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="back-btn"
+            >
+
+                ← Back to Admin Dashboard
+
+            </a>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+
+        <h3>
+
+            Smart Cargo & Driver Management System
+
+        </h3>
+
+        <p>
+
+            Admin Management Panel
+
+        </p>
+
+        <p class="copyright">
+
+            © 2026 Smart Cargo. All Rights Reserved.
+
+        </p>
+
+    </footer>
+
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+<script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+</body>
+
+</html>

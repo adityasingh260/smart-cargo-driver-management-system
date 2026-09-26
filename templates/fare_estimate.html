@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Fare Estimate - Smart Cargo</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .fare-page {
+            min-height: 80vh;
+            padding: 60px 20px;
+        }
+
+        .fare-card {
+            max-width: 750px;
+            margin: auto;
+            padding: 35px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.10);
+        }
+
+        .fare-card h1 {
+            text-align: center;
+            color: #1d4ed8;
+            margin-bottom: 10px;
+        }
+
+        .fare-card .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
+        }
+
+        .predict-btn {
+            width: 100%;
+            margin-top: 30px;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .predict-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(37,99,235,0.30);
+        }
+
+        .result-box {
+            margin-top: 30px;
+            padding: 25px;
+            text-align: center;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border: 1px solid #93c5fd;
+        }
+
+        .result-box h2 {
+            margin: 0 0 10px;
+            color: #1e40af;
+        }
+
+        .fare-amount {
+            font-size: 38px;
+            font-weight: 800;
+            color: #16a34a;
+        }
+
+        .back-btn {
+            display: block;
+            width: fit-content;
+            margin: 25px auto 0;
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        body.dark-mode .fare-card {
+            background: #0f1b2d;
+            color: #e5e7eb;
+        }
+
+        body.dark-mode .fare-card h1 {
+            color: #60a5fa;
+        }
+
+        body.dark-mode .fare-card .subtitle,
+        body.dark-mode .form-group label {
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group select {
+            background: #111827;
+            color: white;
+            border-color: #374151;
+        }
+
+        body.dark-mode .result-box {
+            background: #172554;
+            border-color: #2563eb;
+        }
+
+        @media (max-width: 700px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .fare-card {
+                padding: 25px 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+
+        <div class="logo">
+            🚚 Smart Cargo
+        </div>
+
+        <div class="nav-links">
+            <a href="{{ url_for('customer_dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('book_vehicle') }}">
+                Book Vehicle
+            </a>
+
+            <a href="{{ url_for('my_bookings') }}">
+                My Bookings
+            </a>
+
+            <button id="theme-toggle" class="theme-toggle">
+                🌙
+            </button>
+        </div>
+
+    </nav>
+
+
+    <!-- FARE ESTIMATE -->
+    <section class="fare-page">
+
+        <div class="fare-card">
+
+            <h1>💰 Smart Fare Estimate</h1>
+
+            <p class="subtitle">
+                Get an estimated transportation fare using our
+                Machine Learning model.
+            </p>
+
+
+            <form method="POST">
+
+                <div class="form-grid">
+
+                    <!-- Distance -->
+                    <div class="form-group">
+
+                        <label for="distance_km">
+                            Distance (KM)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="distance_km"
+                            name="distance_km"
+                            min="1"
+                            step="0.1"
+                            placeholder="Example: 25"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Weight -->
+                    <div class="form-group">
+
+                        <label for="weight_kg">
+                            Goods Weight (KG)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="weight_kg"
+                            name="weight_kg"
+                            min="1"
+                            step="0.1"
+                            placeholder="Example: 500"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Vehicle -->
+                    <div class="form-group">
+
+                        <label for="vehicle_type">
+                            Vehicle Type
+                        </label>
+
+                        <select
+                            id="vehicle_type"
+                            name="vehicle_type"
+                            required
+                        >
+
+                            <option value="">
+                                Select Vehicle
+                            </option>
+
+                            <option value="Tata Ace">
+                                Tata Ace
+                            </option>
+
+                            <option value="Mini Truck">
+                                Mini Truck
+                            </option>
+
+                            <option value="Tata 407">
+                                Tata 407
+                            </option>
+
+                            <option value="Pickup Truck">
+                                Pickup Truck
+                            </option>
+
+                            <option value="Truck">
+                                Truck
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Loading -->
+                    <div class="form-group">
+
+                        <label for="loading_required">
+                            Loading Required
+                        </label>
+
+                        <select
+                            id="loading_required"
+                            name="loading_required"
+                            required
+                        >
+
+                            <option value="">
+                                Select Option
+                            </option>
+
+                            <option value="Yes">
+                                Yes
+                            </option>
+
+                            <option value="No">
+                                No
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Goods -->
+                    <div class="form-group">
+
+                        <label for="goods_type">
+                            Goods Type
+                        </label>
+
+                        <select
+                            id="goods_type"
+                            name="goods_type"
+                            required
+                        >
+
+                            <option value="">
+                                Select Goods Type
+                            </option>
+
+                            <option value="Furniture">
+                                Furniture
+                            </option>
+
+                            <option value="Electronics">
+                                Electronics
+                            </option>
+
+                            <option value="Grocery">
+                                Grocery
+                            </option>
+
+                            <option value="Construction Material">
+                                Construction Material
+                            </option>
+
+                            <option value="Clothing">
+                                Clothing
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Traffic -->
+                    <div class="form-group">
+
+                        <label for="traffic_level">
+                            Traffic Level
+                        </label>
+
+                        <select
+                            id="traffic_level"
+                            name="traffic_level"
+                            required
+                        >
+
+                            <option value="">
+                                Select Traffic
+                            </option>
+
+                            <option value="Low">
+                                Low
+                            </option>
+
+                            <option value="Medium">
+                                Medium
+                            </option>
+
+                            <option value="High">
+                                High
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <button type="submit" class="predict-btn">
+                    🔮 Predict Fare
+                </button>
+
+            </form>
+
+
+            {% if predicted_fare is not none %}
+
+            <div class="result-box">
+
+                <h2>Estimated Fare</h2>
+
+                <div class="fare-amount">
+                    ₹{{ predicted_fare }}
+                </div>
+
+                <p>
+                    This fare is predicted using the
+                    Smart Cargo Machine Learning model.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+
+            <a
+                href="{{ url_for('customer_dashboard') }}"
+                class="back-btn"
+            >
+                ← Back to Dashboard
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <p>
+            © 2026 Smart Cargo & Driver Management System
+        </p>
+
+    </footer>
+
+
+    <!-- JAVASCRIPT -->
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+</body>
+</html>

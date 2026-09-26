@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Customer Profile - Smart Cargo</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+
+        .profile-container {
+            max-width: 600px;
+            margin: 40px auto;
+        }
+
+        .profile-card {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .profile-icon {
+            font-size: 60px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .profile-card h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-field {
+            margin-bottom: 20px;
+        }
+
+        .profile-field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        .profile-field input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            box-sizing: border-box;
+        }
+
+        .profile-field input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .profile-actions {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .success-message {
+            background: #e8f7ee;
+            color: #187a3d;
+            padding: 12px;
+            border-radius: 7px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            Smart Cargo
+        </div>
+
+        <div class="nav-links">
+
+            <a href="{{ url_for('customer_dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- PROFILE SECTION -->
+
+    <section class="section">
+
+        <div class="profile-container">
+
+            <div class="profile-card">
+
+                <div class="profile-icon">
+                    👤
+                </div>
+
+                <h1>
+                    Customer Profile
+                </h1>
+
+
+                {% if request.method == "POST" %}
+
+                    <div class="success-message">
+                        ✅ Profile updated successfully!
+                    </div>
+
+                {% endif %}
+
+
+                <form method="POST">
+
+
+                    <!-- NAME -->
+
+                    <div class="profile-field">
+
+                        <label for="name">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value="{{ customer.name }}"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="profile-field">
+
+                        <label for="email">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            value="{{ customer.email }}"
+                            readonly
+                        >
+
+                    </div>
+
+
+                    <!-- MOBILE -->
+
+                    <div class="profile-field">
+
+                        <label for="mobile">
+                            Mobile Number
+                        </label>
+
+                        <input
+                            type="text"
+                            id="mobile"
+                            name="mobile"
+                            value="{{ customer.mobile }}"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- CUSTOMER ID -->
+
+                    <div class="profile-field">
+
+                        <label>
+                            Customer ID
+                        </label>
+
+                        <input
+                            type="text"
+                            value="{{ customer.user_id }}"
+                            readonly
+                        >
+
+                    </div>
+
+
+                    <!-- UPDATE BUTTON -->
+
+                    <div class="profile-actions">
+
+                        <button
+                            type="submit"
+                            class="btn primary-btn"
+                        >
+                            💾 Update Profile
+                        </button>
+
+                    </div>
+
+                </form>
+
+
+                <!-- BACK BUTTON -->
+
+                <div
+                    class="profile-actions"
+                    style="margin-top:15px;"
+                >
+
+                    <a
+                        href="{{ url_for('customer_dashboard') }}"
+                        class="btn secondary-btn"
+                    >
+                        ← Back to Dashboard
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <h3>
+            Smart Cargo & Driver Management System
+        </h3>
+
+        <p>
+            Customer Profile
+        </p>
+
+        <p class="copyright">
+            © 2026 Smart Cargo. All Rights Reserved.
+        </p>
+
+    </footer>
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+<script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+
+</body>
+
+</html>

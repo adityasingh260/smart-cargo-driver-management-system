@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Book Vehicle - Smart Cargo</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+
+        .booking-container {
+            max-width: 650px;
+            margin: 30px auto;
+        }
+
+        .booking-form label {
+            display: block;
+            font-weight: 600;
+            margin-top: 15px;
+            margin-bottom: 7px;
+        }
+
+        .booking-form input,
+        .booking-form select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d0d7de;
+            border-radius: 7px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
+        .booking-form input:focus,
+        .booking-form select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .photo-box {
+            margin-top: 20px;
+            padding: 18px;
+            background: #f7faff;
+            border: 1px dashed #2563eb;
+            border-radius: 8px;
+        }
+
+        .photo-box label {
+            margin-top: 0;
+        }
+
+        .photo-help {
+            display: block;
+            margin-top: 8px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            margin-top: 25px;
+            padding: 13px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <!-- Navbar -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            Smart Cargo
+        </div>
+
+        <div class="nav-links">
+
+            <a href="{{ url_for('customer_dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- Booking Section -->
+
+    <section class="section">
+
+        <h2>Book a Vehicle</h2>
+
+        <p class="section-intro">
+            Enter your goods transportation details.
+        </p>
+
+
+        <div class="service-card booking-container">
+
+            <!-- IMPORTANT: FORM START -->
+
+            <form action="{{ url_for('book_vehicle') }}"
+                  method="POST"
+                  enctype="multipart/form-data"
+                  class="booking-form">
+
+
+                <!-- Pickup -->
+
+                <label for="pickup_location">
+                    Pickup Location
+                </label>
+
+                <input
+                    type="text"
+                    id="pickup_location"
+                    name="pickup_location"
+                    placeholder="Enter pickup location"
+                    required>
+
+
+                <!-- Drop -->
+
+                <label for="drop_location">
+                    Drop Location
+                </label>
+
+                <input
+                    type="text"
+                    id="drop_location"
+                    name="drop_location"
+                    placeholder="Enter drop location"
+                    required>
+
+
+                <!-- Goods -->
+
+                <label for="goods_type">
+                    Goods Type
+                </label>
+
+                <select
+                    id="goods_type"
+                    name="goods_type"
+                    required>
+
+                    <option value="">
+                        Select Goods Type
+                    </option>
+
+                    <option value="Furniture">
+                        Furniture
+                    </option>
+
+                    <option value="Electronics">
+                        Electronics
+                    </option>
+
+                    <option value="Grocery">
+                        Grocery
+                    </option>
+
+                    <option value="Construction Material">
+                        Construction Material
+                    </option>
+
+                    <option value="Household Items">
+                        Household Items
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+
+                <!-- Weight -->
+
+                <label for="weight_kg">
+                    Approximate Goods Weight (KG)
+                </label>
+
+                <input
+                    type="number"
+                    id="weight_kg"
+                    name="weight_kg"
+                    min="1"
+                    step="0.01"
+                    placeholder="Enter approximate weight in KG"
+                    required>
+
+
+                <!-- Vehicle -->
+
+                <label for="vehicle_type">
+                    Vehicle Type
+                </label>
+
+                <select
+                    id="vehicle_type"
+                    name="vehicle_type"
+                    required>
+
+                    <option value="">
+                        Select Vehicle Type
+                    </option>
+
+                    <option value="Mini Truck">
+                        Mini Truck
+                    </option>
+
+                    <option value="Pickup">
+                        Pickup
+                    </option>
+
+                    <option value="Tata Ace">
+                        Tata Ace
+                    </option>
+
+                    <option value="Medium Truck">
+                        Medium Truck
+                    </option>
+
+                    <option value="Large Truck">
+                        Large Truck
+                    </option>
+
+                </select>
+
+
+                <!-- Loading -->
+
+                <label for="loading_required">
+                    Loading Required
+                </label>
+
+                <select
+                    id="loading_required"
+                    name="loading_required"
+                    required>
+
+                    <option value="">
+                        Select Option
+                    </option>
+
+                    <option value="Yes">
+                        Yes
+                    </option>
+
+                    <option value="No">
+                        No
+                    </option>
+
+                </select>
+
+
+                <!-- Goods Photo -->
+
+                <div class="photo-box">
+
+                    <label for="goods_photo">
+                        📸 Upload Goods Photo
+                    </label>
+
+                    <input
+                        type="file"
+                        id="goods_photo"
+                        name="goods_photo"
+                        accept=".jpg,.jpeg,.png,.webp">
+
+                    <small class="photo-help">
+                        Upload a clear photo of the goods to help
+                        the driver understand the item before accepting
+                        the booking.
+                    </small>
+
+                </div>
+
+
+                <!-- Submit -->
+
+                <button
+                    type="submit"
+                    class="btn primary-btn submit-btn">
+
+                    🚚 Submit Booking
+
+                </button>
+
+
+            </form>
+
+            <!-- IMPORTANT: FORM END -->
+
+        </div>
+
+    </section>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <h3>
+            Smart Cargo & Driver Management System
+        </h3>
+
+        <p>
+            Smart solution for modern goods transportation.
+        </p>
+
+        <p class="copyright">
+            © 2026 Smart Cargo. All Rights Reserved.
+        </p>
+
+    </footer>
+
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+<script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+</body>
+
+</html>

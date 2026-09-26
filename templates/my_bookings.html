@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>My Bookings - Smart Cargo</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+
+        .booking-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1050px;
+        }
+
+        .booking-table th {
+            padding: 14px 12px;
+            background: #f5f8ff;
+            color: #1e3a8a;
+            text-align: left;
+            border-bottom: 2px solid #dbeafe;
+        }
+
+        .booking-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .booking-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .fare-breakup {
+            min-width: 150px;
+            line-height: 1.8;
+            white-space: nowrap;
+        }
+
+        .driver-fare {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .platform-fee {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .total-fare {
+            color: #16a34a;
+            font-weight: 700;
+            border-top: 1px solid #d1d5db;
+            padding-top: 4px;
+        }
+
+        .status {
+            font-weight: 600;
+        }
+
+        /* Dark Mode */
+
+        body.dark-mode .booking-table th {
+            background: #172554;
+            color: #bfdbfe;
+        }
+
+        body.dark-mode .booking-table td {
+            border-color: #374151;
+        }
+
+        body.dark-mode .booking-table tr:hover {
+            background: #111827;
+        }
+
+        body.dark-mode .driver-fare {
+            color: #60a5fa;
+        }
+
+        body.dark-mode .platform-fee {
+            color: #9ca3af;
+        }
+
+        body.dark-mode .total-fare {
+            color: #4ade80;
+            border-color: #4b5563;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            Smart Cargo
+        </div>
+
+        <div class="nav-links">
+
+            <a href="{{ url_for('customer_dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- MY BOOKINGS -->
+
+    <section class="section">
+
+        <h2>My Bookings</h2>
+
+        <p class="section-intro">
+            View your transportation booking requests and estimated fares.
+        </p>
+
+
+        {% if bookings %}
+
+        <div style="overflow-x:auto;">
+
+            <table class="booking-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Booking ID
+                        </th>
+
+                        <th>
+                            Pickup
+                        </th>
+
+                        <th>
+                            Drop
+                        </th>
+
+                        <th>
+                            Goods
+                        </th>
+
+                        <th>
+                            Weight
+                        </th>
+
+                        <th>
+                            Vehicle
+                        </th>
+
+                        <th>
+                            Fare Details
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for booking in bookings %}
+
+                    <tr>
+
+                        <td>
+                            #{{ booking.booking_id }}
+                        </td>
+
+                        <td>
+                            {{ booking.pickup_location }}
+                        </td>
+
+                        <td>
+                            {{ booking.drop_location }}
+                        </td>
+
+                        <td>
+                            {{ booking.goods_type }}
+                        </td>
+
+                        <td>
+                            {{ booking.weight_kg }} KG
+                        </td>
+
+                        <td>
+                            {{ booking.vehicle_type }}
+                        </td>
+
+
+                        <!-- FARE BREAKUP -->
+
+                        <td class="fare-breakup">
+
+                            {% if booking.fare is not none %}
+
+                                <div class="driver-fare">
+                                    Driver Fare:
+                                    ₹{{ "%.2f"|format(booking.driver_earning) }}
+                                </div>
+
+                                <div class="platform-fee">
+                                    Platform Fee:
+                                    ₹{{ "%.2f"|format(booking.platform_charge) }}
+                                </div>
+
+                                <div class="total-fare">
+                                    Total:
+                                    ₹{{ "%.2f"|format(booking.fare) }}
+                                </div>
+
+                            {% else %}
+
+                                Calculating...
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td class="status">
+                            {{ booking.status }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+
+        <!-- NO BOOKINGS -->
+
+        <div class="service-card"
+             style="max-width:500px; margin:30px auto;">
+
+            <h3>
+                No Bookings Yet
+            </h3>
+
+            <p>
+                You have not created any transportation booking.
+            </p>
+
+            <br>
+
+            <a href="{{ url_for('book_vehicle') }}"
+               class="btn primary-btn">
+
+                Book a Vehicle
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <h3>
+            Smart Cargo & Driver Management System
+        </h3>
+
+        <p>
+            Smart solution for modern goods transportation.
+        </p>
+
+    </footer>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+
+
+</body>
+
+</html>

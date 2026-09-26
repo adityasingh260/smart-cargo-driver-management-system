@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Booking Requests - Smart Cargo</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .goods-photo {
+            width: 180px;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .view-photo-btn {
+            display: inline-block;
+            padding: 7px 12px;
+            background: #f1f5ff;
+            color: #1d4ed8;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .view-photo-btn:hover {
+            background: #dbe7ff;
+        }
+
+        .no-photo {
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+
+        <div class="logo">
+            Smart Cargo
+        </div>
+
+        <div class="nav-links">
+
+            <a href="{{ url_for('driver_dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- PAGE -->
+    <section class="dashboard">
+
+        <div class="dashboard-container">
+
+            <h1>Booking Requests</h1>
+
+            <p>
+                Here you can view booking requests assigned to you.
+            </p>
+
+
+            {% if requests %}
+
+            {% for request in requests %}
+
+            <div class="service-card">
+
+                <h2>
+                    Booking #{{ request.booking_id }}
+                </h2>
+
+
+                <p>
+                    <strong>Pickup:</strong>
+                    {{ request.pickup_location }}
+                </p>
+
+
+                <p>
+                    <strong>Drop:</strong>
+                    {{ request.drop_location }}
+                </p>
+
+
+                <p>
+                    <strong>Goods:</strong>
+                    {{ request.goods_type }}
+                </p>
+
+
+                <!-- GOODS PHOTO -->
+
+                <p>
+                    <strong>Goods Photo:</strong>
+                </p>
+
+                {% if request.goods_photo %}
+
+                <img src="{{ url_for('static', filename='uploads/' + request.goods_photo) }}" class="goods-photo"
+                    alt="Goods Photo">
+
+                <a href="{{ url_for('static', filename='uploads/' + request.goods_photo) }}" target="_blank"
+                    class="view-photo-btn">
+                    📷 View Photo
+                </a>
+
+                {% else %}
+
+                <span class="no-photo">
+                    No Photo Available
+                </span>
+
+                {% endif %}
+
+
+                <p>
+                    <strong>Weight:</strong>
+                    {{ request.weight_kg }} KG
+                </p>
+
+
+                <p>
+                    <strong>Vehicle:</strong>
+                    {{ request.vehicle_type }}
+                </p>
+
+
+                <!-- FARE -->
+
+
+                <!-- DRIVER EARNING -->
+
+                <p>
+                    <strong>Driver Earning:</strong>
+                    ₹{{ "%.2f"|format(request.driver_earning) }}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+                    {{ request.status }}
+                </p>
+
+
+                <!-- ACCEPT / REJECT -->
+
+                {% if request.status == 'Pending' %}
+
+                <div style="margin-top: 20px;">
+
+                    <a href="{{ url_for('accept_booking',
+                            notification_id=request.notification_id) }}" class="btn primary-btn">
+                        Accept
+                    </a>
+
+
+                    <a href="{{ url_for('reject_driver_booking',
+                            notification_id=request.notification_id) }}" class="btn" style="margin-left: 10px;">
+                        Reject
+                    </a>
+
+                </div>
+
+
+                {% elif request.status == 'Accepted' %}
+
+                <p style="margin-top: 15px;">
+                    <strong>Booking Accepted ✓</strong>
+                </p>
+
+
+                {% elif request.status == 'Rejected' %}
+
+                <p style="margin-top: 15px;">
+                    <strong>Booking Rejected</strong>
+                </p>
+
+                {% endif %}
+
+            </div>
+
+            {% endfor %}
+
+
+            {% else %}
+
+            <div class="service-card">
+
+                <h2>
+                    No Booking Requests
+                </h2>
+
+                <p>
+                    Currently, you don't have any booking requests.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+
+            <br>
+
+
+            <a href="{{ url_for('driver_dashboard') }}" class="btn primary-btn">
+                Back to Dashboard
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+
+</body>
+
+</html>

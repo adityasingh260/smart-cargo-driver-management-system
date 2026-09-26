@@ -1,0 +1,1079 @@
+/* =========================================================
+   SMART CARGO & DRIVER MANAGEMENT SYSTEM
+   Premium / Glowing Logistics UI
+   ========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    color: #172033;
+    background: #ffffff;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.navbar {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 7%;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(29, 78, 216, 0.10);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 25px rgba(15, 23, 42, 0.05);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1d4ed8;
+    letter-spacing: 0.3px;
+    transition: 0.3s ease;
+}
+
+.logo:hover {
+    text-shadow: 0 0 15px rgba(29, 78, 216, 0.45);
+    transform: translateY(-1px);
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-size: 15px;
+    font-weight: 500;
+    position: relative;
+    transition: 0.3s ease;
+}
+
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -7px;
+    width: 0;
+    height: 2px;
+    background: #1d4ed8;
+    box-shadow: 0 0 8px rgba(29, 78, 216, 0.7);
+    transition: 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #1d4ed8;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+
+/* =========================================================
+   HERO SECTION
+   ========================================================= */
+
+.hero {
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 100px 20px;
+    position: relative;
+    overflow: hidden;
+
+    background:
+        radial-gradient(circle at 15% 20%,
+            rgba(59, 130, 246, 0.16),
+            transparent 30%),
+        radial-gradient(circle at 85% 75%,
+            rgba(37, 99, 235, 0.13),
+            transparent 30%),
+        linear-gradient(135deg, #f7faff, #eef4ff, #ffffff);
+}
+
+/* Background glow */
+
+.hero::before {
+    content: "";
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.10);
+    filter: blur(70px);
+    top: -120px;
+    left: -100px;
+    animation: floatingGlow 6s ease-in-out infinite;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.10);
+    filter: blur(65px);
+    right: -100px;
+    bottom: -120px;
+    animation: floatingGlow 7s ease-in-out infinite reverse;
+}
+
+.hero-content {
+    max-width: 850px;
+    position: relative;
+    z-index: 2;
+    animation: heroAppear 1s ease forwards;
+}
+
+.hero h1 {
+    font-size: 52px;
+    line-height: 1.15;
+    margin-bottom: 25px;
+    color: #111827;
+    letter-spacing: -1px;
+}
+
+.hero h1 span {
+    display: block;
+    color: #1d4ed8;
+    text-shadow:
+        0 0 10px rgba(29, 78, 216, 0.18),
+        0 0 25px rgba(29, 78, 216, 0.12);
+}
+
+.hero p {
+    font-size: 19px;
+    color: #64748b;
+    max-width: 650px;
+    margin: 0 auto 35px;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 13px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    box-shadow:
+        0 8px 25px rgba(29, 78, 216, 0.28),
+        0 0 0 rgba(29, 78, 216, 0);
+}
+
+.primary-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.35),
+        transparent
+    );
+    transform: skewX(-20deg);
+    transition: 0.6s;
+}
+
+.primary-btn:hover::before {
+    left: 130%;
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 12px 30px rgba(29, 78, 216, 0.35),
+        0 0 20px rgba(29, 78, 216, 0.18);
+}
+
+.secondary-btn {
+    border: 1px solid #1d4ed8;
+    color: #1d4ed8;
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: 0 5px 20px rgba(29, 78, 216, 0.08);
+}
+
+.secondary-btn:hover {
+    background: #1d4ed8;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow:
+        0 10px 25px rgba(29, 78, 216, 0.28),
+        0 0 18px rgba(29, 78, 216, 0.20);
+}
+
+
+/* =========================================================
+   COMMON SECTION
+   ========================================================= */
+
+.section {
+    padding: 90px 7%;
+    text-align: center;
+    position: relative;
+}
+
+.section h2 {
+    font-size: 34px;
+    margin-bottom: 12px;
+    color: #111827;
+}
+
+.section-intro {
+    color: #64748b;
+    margin-bottom: 40px;
+}
+
+
+/* =========================================================
+   SERVICES
+   ========================================================= */
+
+.service-container {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    max-width: 1100px;
+    margin: 40px auto 0;
+}
+
+.service-card {
+    flex: 1;
+    padding: 35px 25px;
+    border: 1px solid rgba(29, 78, 216, 0.10);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.35s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.05);
+}
+
+/* Glowing line */
+
+.service-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #2563eb,
+        transparent
+    );
+    opacity: 0;
+    transition: 0.35s ease;
+}
+
+.service-card::after {
+    content: "";
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.08);
+    filter: blur(25px);
+    right: -50px;
+    bottom: -50px;
+    transition: 0.4s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(37, 99, 235, 0.25);
+    box-shadow:
+        0 18px 40px rgba(15, 23, 42, 0.10),
+        0 0 25px rgba(37, 99, 235, 0.08);
+}
+
+.service-card:hover::before {
+    opacity: 1;
+}
+
+.service-card:hover::after {
+    transform: scale(1.5);
+}
+
+.service-card h3 {
+    margin-bottom: 15px;
+    font-size: 20px;
+    color: #172033;
+}
+
+.service-card p {
+    color: #64748b;
+}
+
+
+/* =========================================================
+   HOW IT WORKS
+   ========================================================= */
+
+.how-section {
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(37, 99, 235, 0.08),
+            transparent 45%
+        ),
+        #f7f9fd;
+}
+
+.steps {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    max-width: 1100px;
+    margin: 45px auto 0;
+}
+
+.step {
+    flex: 1;
+    padding: 25px 20px;
+    border-radius: 14px;
+    transition: 0.3s ease;
+}
+
+.step:hover {
+    transform: translateY(-6px);
+}
+
+.step-number {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+
+    box-shadow:
+        0 0 0 6px rgba(37, 99, 235, 0.08),
+        0 0 20px rgba(37, 99, 235, 0.25);
+
+    transition: 0.3s ease;
+}
+
+.step:hover .step-number {
+    transform: scale(1.1);
+    box-shadow:
+        0 0 0 8px rgba(37, 99, 235, 0.08),
+        0 0 30px rgba(37, 99, 235, 0.35);
+}
+
+.step h3 {
+    margin-bottom: 8px;
+    color: #172033;
+}
+
+.step p {
+    color: #64748b;
+}
+
+
+/* =========================================================
+   ABOUT
+   ========================================================= */
+
+.about {
+    max-width: 1000px;
+    margin: auto;
+}
+
+.about p {
+    max-width: 800px;
+    margin: 25px auto 0;
+    color: #64748b;
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+footer {
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(37, 99, 235, 0.16),
+            transparent 40%
+        ),
+        #0f172a;
+
+    color: white;
+    text-align: center;
+    padding: 45px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+footer::before {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(37, 99, 235, 0.12);
+    border-radius: 50%;
+    filter: blur(50px);
+    top: -100px;
+    left: 20%;
+}
+
+footer h3 {
+    margin-bottom: 10px;
+    position: relative;
+}
+
+footer p {
+    color: #aeb8ca;
+    position: relative;
+}
+
+.copyright {
+    margin-top: 20px;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes heroAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes floatingGlow {
+
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(25px, 20px) scale(1.08);
+    }
+
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+}
+
+
+/* =========================================================
+   SELECTION
+   ========================================================= */
+
+::selection {
+    background: #2563eb;
+    color: white;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+::-webkit-scrollbar {
+    width: 9px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2563eb;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #1d4ed8;
+}
+
+
+/* =========================================================
+   RESPONSIVE DESIGN
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .navbar {
+        padding: 0 5%;
+    }
+
+    .nav-links {
+        gap: 12px;
+    }
+
+    .nav-links a {
+        font-size: 13px;
+    }
+
+    .hero {
+        min-height: 560px;
+        padding: 80px 20px;
+    }
+
+    .hero h1 {
+        font-size: 38px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .service-container,
+    .steps {
+        flex-direction: column;
+    }
+
+    .service-card {
+        width: 100%;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn {
+        width: 220px;
+    }
+
+    .section {
+        padding: 70px 5%;
+    }
+
+    .section h2 {
+        font-size: 29px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .navbar {
+        height: auto;
+        min-height: 70px;
+        padding: 15px 5%;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px 15px;
+    }
+
+    .hero h1 {
+        font-size: 32px;
+    }
+
+    .hero p {
+        font-size: 15px;
+    }
+
+    .section h2 {
+        font-size: 26px;
+    }
+}
+/* =====================================================
+   DARK MODE TOGGLE BUTTON
+   ===================================================== */
+
+.theme-toggle {
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(29, 78, 216, 0.25);
+    border-radius: 50%;
+    background: #ffffff;
+    color: #1d4ed8;
+    font-size: 19px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(29, 78, 216, 0.12);
+}
+
+.theme-toggle:hover {
+    transform: rotate(15deg) scale(1.08);
+    box-shadow:
+        0 0 15px rgba(29, 78, 216, 0.30),
+        0 5px 20px rgba(29, 78, 216, 0.15);
+}
+
+
+/* =====================================================
+   DARK MODE
+   ===================================================== */
+
+body.dark-mode {
+    color: #e5e7eb;
+    background: #07111f;
+}
+
+
+/* Navbar */
+
+body.dark-mode .navbar {
+    background: rgba(7, 17, 31, 0.94);
+    border-bottom-color: rgba(96, 165, 250, 0.15);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.30);
+}
+
+body.dark-mode .logo {
+    color: #60a5fa;
+}
+
+body.dark-mode .nav-links a {
+    color: #d1d5db;
+}
+
+body.dark-mode .nav-links a:hover {
+    color: #60a5fa;
+}
+
+body.dark-mode .nav-links a::after {
+    background: #60a5fa;
+    box-shadow: 0 0 10px rgba(96, 165, 250, 0.8);
+}
+
+
+/* Toggle Button */
+
+body.dark-mode .theme-toggle {
+    background: #111f33;
+    color: #facc15;
+    border-color: rgba(96, 165, 250, 0.25);
+    box-shadow:
+        0 0 15px rgba(37, 99, 235, 0.18);
+}
+
+
+/* Hero */
+
+body.dark-mode .hero {
+    background:
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(37, 99, 235, 0.20),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 85% 75%,
+            rgba(59, 130, 246, 0.15),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #07111f,
+            #0b1729,
+            #07111f
+        );
+}
+
+body.dark-mode .hero h1 {
+    color: #f8fafc;
+}
+
+body.dark-mode .hero h1 span {
+    color: #60a5fa;
+    text-shadow:
+        0 0 12px rgba(96, 165, 250, 0.35),
+        0 0 30px rgba(37, 99, 235, 0.20);
+}
+
+body.dark-mode .hero p {
+    color: #aab7c9;
+}
+
+
+/* Secondary Button */
+
+body.dark-mode .secondary-btn {
+    background: rgba(17, 31, 51, 0.8);
+    color: #60a5fa;
+    border-color: #3b82f6;
+}
+
+body.dark-mode .secondary-btn:hover {
+    background: #2563eb;
+    color: white;
+}
+
+
+/* Sections */
+
+body.dark-mode .section {
+    background: #07111f;
+}
+
+body.dark-mode .section h2 {
+    color: #f8fafc;
+}
+
+body.dark-mode .section-intro {
+    color: #94a3b8;
+}
+
+
+/* Service Cards */
+
+body.dark-mode .service-card {
+    background: rgba(15, 31, 51, 0.80);
+    border-color: rgba(96, 165, 250, 0.15);
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.25);
+}
+
+body.dark-mode .service-card h3 {
+    color: #f1f5f9;
+}
+
+body.dark-mode .service-card p {
+    color: #94a3b8;
+}
+
+body.dark-mode .service-card:hover {
+    border-color: rgba(96, 165, 250, 0.40);
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.35),
+        0 0 25px rgba(37, 99, 235, 0.12);
+}
+
+
+/* How It Works */
+
+body.dark-mode .how-section {
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(37, 99, 235, 0.15),
+            transparent 45%
+        ),
+        #050d18;
+}
+
+body.dark-mode .step h3 {
+    color: #f1f5f9;
+}
+
+body.dark-mode .step p {
+    color: #94a3b8;
+}
+
+
+/* Road */
+
+body.dark-mode .road {
+    background: #334155;
+}
+
+
+/* Footer */
+
+body.dark-mode footer {
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(37, 99, 235, 0.20),
+            transparent 40%
+        ),
+        #020817;
+}
+
+body.dark-mode footer p {
+    color: #94a3b8;
+}
+
+
+/* Smooth Theme Transition */
+
+body,
+.navbar,
+.hero,
+.section,
+.service-card,
+.how-section,
+footer,
+.theme-toggle,
+.nav-links a,
+.hero h1,
+.hero p {
+    transition:
+        background 0.35s ease,
+        color 0.35s ease,
+        border-color 0.35s ease,
+        box-shadow 0.35s ease;
+}
+/* =====================================================
+   3D SERVICE CARD EFFECT
+   ===================================================== */
+
+.service-card {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transition: transform 0.15s ease, box-shadow 0.3s ease;
+}
+
+.service-card:hover {
+    box-shadow:
+        0 25px 50px rgba(15, 23, 42, 0.18),
+        0 0 30px rgba(37, 99, 235, 0.15);
+}
+
+/* Content ko card ke andar depth dena */
+
+.service-card h3,
+.service-card p {
+    transform: translateZ(25px);
+}
+
+/* Mobile par 3D disable */
+
+@media (max-width: 768px) {
+    .service-card {
+        transform: none !important;
+    }
+}
+/* =====================================================
+   GLOBAL 3D EFFECT
+   ===================================================== */
+
+/* Common 3D Cards */
+.service-card,
+.step,
+.dashboard-card,
+.stat-card,
+.info-card,
+.booking-card,
+.profile-card,
+.request-card,
+.status-card {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    will-change: transform;
+}
+
+/* 3D hover shadow */
+.service-card:hover,
+.step:hover,
+.dashboard-card:hover,
+.stat-card:hover,
+.info-card:hover,
+.booking-card:hover,
+.profile-card:hover,
+.request-card:hover,
+.status-card:hover {
+    box-shadow:
+        0 25px 50px rgba(15, 23, 42, 0.18),
+        0 0 30px rgba(37, 99, 235, 0.15);
+}
+
+/* 3D content depth */
+.service-card h3,
+.service-card p,
+.step h3,
+.step p,
+.dashboard-card h3,
+.dashboard-card p,
+.stat-card h3,
+.stat-card p,
+.info-card h3,
+.info-card p {
+    transform: translateZ(20px);
+}
+
+
+/* =====================================================
+   3D BUTTON EFFECT
+   ===================================================== */
+
+.btn,
+button,
+input[type="submit"] {
+    transform-style: preserve-3d;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.btn:hover,
+button:hover,
+input[type="submit"]:hover {
+    transform:
+        perspective(700px)
+        translateY(-4px)
+        translateZ(8px);
+
+    box-shadow:
+        0 12px 25px rgba(15, 23, 42, 0.20),
+        0 0 20px rgba(37, 99, 235, 0.15);
+}
+
+.btn:active,
+button:active,
+input[type="submit"]:active {
+    transform:
+        perspective(700px)
+        translateY(1px)
+        translateZ(0);
+}
+
+
+/* =====================================================
+   3D IMAGE EFFECT
+   ===================================================== */
+
+.goods-photo,
+.profile-image,
+.vehicle-image {
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+    transform-style: preserve-3d;
+}
+
+.goods-photo:hover,
+.profile-image:hover,
+.vehicle-image:hover {
+    transform:
+        perspective(700px)
+        rotateX(3deg)
+        rotateY(-4deg)
+        scale(1.04)
+        translateZ(10px);
+
+    box-shadow:
+        0 15px 30px rgba(15, 23, 42, 0.20),
+        0 0 20px rgba(37, 99, 235, 0.15);
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 768px) {
+
+    .service-card,
+    .step,
+    .dashboard-card,
+    .stat-card,
+    .info-card,
+    .booking-card,
+    .profile-card,
+    .request-card,
+    .status-card {
+        transform: none !important;
+    }
+
+    .btn:hover,
+    button:hover,
+    input[type="submit"]:hover {
+        transform: translateY(-2px);
+    }
+}
+.hero-title {
+    animation: heroTitle 1.2s ease-out forwards;
+}
+
+.hero-title span {
+    display: inline-block;
+    opacity: 0;
+    animation: heroTitleSpan 1.2s ease-out 0.3s forwards;
+}
+
+@keyframes heroTitle {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes heroTitleSpan {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
