@@ -8,12 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>All Bookings - Smart Cargo</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
     <style>
-
         .booking-page {
             padding: 50px 6%;
             min-height: 70vh;
@@ -208,7 +207,6 @@
         .back-btn:hover {
             background: #162d68;
         }
-
     </style>
 
 </head>
@@ -285,6 +283,8 @@
                         <th>Vehicle</th>
 
                         <th>Fare</th>
+
+                        <th>Payment</th>
 
                         <th>Driver</th>
 
@@ -383,19 +383,59 @@
 
                             {% if booking.fare %}
 
-                                <span class="fare">
+                            <span class="fare">
 
-                                    ₹{{ booking.fare }}
+                                ₹{{ booking.fare }}
 
-                                </span>
+                            </span>
 
                             {% else %}
 
-                                <span class="driver-not-assigned">
+                            <span class="driver-not-assigned">
 
-                                    Not calculated
+                                Not calculated
 
-                                </span>
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <!-- PAYMENT -->
+
+                        <td>
+
+                            {% if booking.fare %}
+
+                            <div style="font-weight:600;">
+                                Total:
+                                ₹{{ "%.2f"|format(booking.fare) }}
+                            </div>
+
+                            <div style="color:#2563eb; margin-top:6px;">
+                                Platform Earning (20%):
+                                ₹{{ "%.2f"|format(booking.platform_charge) }}
+                            </div>
+
+                            {% if booking.payment_status == 'Paid' %}
+
+                            <div style="color:#16a34a; font-weight:700; margin-top:6px;">
+                                ✓ Paid
+                            </div>
+
+                            {% else %}
+
+                            <div style="color:#d97706; font-weight:600; margin-top:6px;">
+                                Payment Pending
+                            </div>
+
+                            {% endif %}
+
+                            {% else %}
+
+                            <span class="driver-not-assigned">
+                                Not calculated
+                            </span>
 
                             {% endif %}
 
@@ -408,19 +448,19 @@
 
                             {% if booking.driver_name %}
 
-                                <span class="driver-name">
+                            <span class="driver-name">
 
-                                    🚚 {{ booking.driver_name }}
+                                🚚 {{ booking.driver_name }}
 
-                                </span>
+                            </span>
 
                             {% else %}
 
-                                <span class="driver-not-assigned">
+                            <span class="driver-not-assigned">
 
-                                    Not Assigned
+                                Not Assigned
 
-                                </span>
+                            </span>
 
                             {% endif %}
 
@@ -434,92 +474,92 @@
 
                             {% if booking.status == 'Pending' %}
 
-                                <span class="status pending">
+                            <span class="status pending">
 
-                                    Pending
+                                Pending
 
-                                </span>
+                            </span>
 
 
                             {% elif booking.status == 'Searching for Driver' %}
 
-                                <span class="status searching">
+                            <span class="status searching">
 
-                                    Searching Driver
+                                Searching Driver
 
-                                </span>
+                            </span>
 
 
                             {% elif booking.status == 'Accepted' %}
 
-                                <span class="status accepted">
+                            <span class="status accepted">
 
-                                    Accepted
+                                Accepted
 
-                                </span>
+                            </span>
 
 
                             {% elif booking.status == 'Reached Pickup' %}
 
-                                <span class="status reached">
+                            <span class="status reached">
 
-                                    Reached Pickup
+                                Reached Pickup
 
-                                </span>
+                            </span>
 
 
                             {% elif booking.status == 'Goods Picked' %}
 
-                                <span class="status picked">
+                            <span class="status picked">
 
-                                    Goods Picked
+                                Goods Picked
 
-                                </span>
+                            </span>
 
 
                             {% elif booking.status == 'In Transit' %}
 
-                                <span class="status transit">
+                            <span class="status transit">
 
-                                    In Transit
+                                In Transit
 
-                                </span>
+                            </span>
 
 
                             {% elif booking.status == 'Delivered' %}
 
-                                <span class="status delivered">
+                            <span class="status delivered">
 
-                                    Delivered
+                                Delivered
 
-                                </span>
+                            </span>
 
 
                             {% elif booking.status == 'Rejected' %}
 
-                                <span class="status rejected">
+                            <span class="status rejected">
 
-                                    Rejected
+                                Rejected
 
-                                </span>
+                            </span>
 
 
                             {% elif booking.status == 'Approved - Waiting for Driver' %}
 
-                                <span class="status waiting">
+                            <span class="status waiting">
 
-                                    Waiting for Driver
+                                Waiting for Driver
 
-                                </span>
+                            </span>
 
 
                             {% else %}
 
-                                <span class="status unknown">
+                            <span class="status unknown">
 
-                                    {{ booking.status }}
+                                {{ booking.status }}
 
-                                </span>
+                            </span>
 
                             {% endif %}
 
@@ -535,43 +575,28 @@
                             {% if booking.goods_photo %}
 
 
-                                <img
-
-                                    src="{{ url_for('static',
-                                    filename='uploads/' + booking.goods_photo) }}"
-
-                                    class="goods-photo"
-
-                                    alt="Goods Photo"
+                            <img src="{{ url_for('static',
+                                    filename='uploads/' + booking.goods_photo) }}" class="goods-photo"
+                                alt="Goods Photo">
 
 
-                                >
+                            <a href="{{ url_for('static',
+                                    filename='uploads/' + booking.goods_photo) }}" target="_blank"
+                                class="view-photo-btn">
 
+                                📷 View Photo
 
-                                <a
-
-                                    href="{{ url_for('static',
-                                    filename='uploads/' + booking.goods_photo) }}"
-
-                                    target="_blank"
-
-                                    class="view-photo-btn"
-
-                                >
-
-                                    📷 View Photo
-
-                                </a>
+                            </a>
 
 
                             {% else %}
 
 
-                                <span class="no-photo">
+                            <span class="no-photo">
 
-                                    No Photo
+                                No Photo
 
-                                </span>
+                            </span>
 
 
                             {% endif %}
@@ -613,10 +638,7 @@
 
         <!-- NO BOOKINGS -->
 
-        <div
-            class="booking-table-container"
-            style="text-align:center;"
-        >
+        <div class="booking-table-container" style="text-align:center;">
 
             <h2>
                 📋 No Bookings Found
@@ -638,10 +660,7 @@
 
         <div class="back-section">
 
-            <a
-                href="{{ url_for('admin_dashboard') }}"
-                class="back-btn"
-            >
+            <a href="{{ url_for('admin_dashboard') }}" class="back-btn">
 
                 ← Back to Admin Dashboard
 
@@ -679,8 +698,8 @@
 
     </footer>
 
-<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-<script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/3d.js') }}"></script>
 </body>
 
 </html>

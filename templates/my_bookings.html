@@ -5,16 +5,14 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>My Bookings - Smart Cargo</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
     <style>
-
         .booking-table {
             width: 100%;
             border-collapse: collapse;
@@ -92,7 +90,6 @@
             color: #4ade80;
             border-color: #4b5563;
         }
-
     </style>
 
 </head>
@@ -134,6 +131,99 @@
             View your transportation booking requests and estimated fares.
         </p>
 
+        <!-- BOOKING FILTERS -->
+
+        <div class="booking-filters">
+
+            <form method="GET" action="{{ url_for('my_bookings') }}">
+
+                <!-- STATUS -->
+                <div class="filter-group">
+
+                    <label for="status">
+                        Status
+                    </label>
+
+                    <select name="status" id="status">
+
+                        <option value="">All Status</option>
+
+                        <option value="Pending" {% if request.args.get('status')=='Pending' %}selected{% endif %}>
+                            Pending
+                        </option>
+
+                        <option value="Approved" {% if request.args.get('status')=='Approved' %}selected{% endif %}>
+                            Approved
+                        </option>
+
+                        <option value="Accepted" {% if request.args.get('status')=='Accepted' %}selected{% endif %}>
+                            Accepted
+                        </option>
+
+                        <option value="Rejected" {% if request.args.get('status')=='Rejected' %}selected{% endif %}>
+                            Rejected
+                        </option>
+
+                        <option value="Completed" {% if request.args.get('status')=='Completed' %}selected{% endif %}>
+                            Completed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- VEHICLE -->
+
+                <div class="filter-group">
+
+                    <label for="vehicle_type">
+                        Vehicle
+                    </label>
+
+                    <select name="vehicle_type" id="vehicle_type">
+
+                        <option value="">All Vehicles</option>
+
+                        {% for vehicle in vehicle_types %}
+
+                        <option value="{{ vehicle }}" {% if request.args.get('vehicle_type')==vehicle %}selected{% endif
+                            %}>
+                            {{ vehicle }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- DATE -->
+
+                <div class="filter-group">
+
+                    <label for="date">
+                        Date
+                    </label>
+
+                    <input type="date" name="date" id="date" value="{{ request.args.get('date', '') }}">
+
+                </div>
+
+
+                <button type="submit" class="filter-btn">
+                    Apply Filter
+                </button>
+
+                <a href="{{ url_for('my_bookings') }}" class="clear-filter">
+                    Clear
+                </a>
+
+            </form>
+
+        </div>
+
 
         {% if bookings %}
 
@@ -147,6 +237,10 @@
 
                         <th>
                             Booking ID
+                        </th>
+
+                        <th>
+                            Date & Time
                         </th>
 
                         <th>
@@ -170,11 +264,19 @@
                         </th>
 
                         <th>
+                            Driver Contact
+                        </th>
+
+                        <th>
                             Fare Details
                         </th>
 
                         <th>
                             Status
+                        </th>
+
+                        <th>
+                            Payment
                         </th>
 
                     </tr>
@@ -190,6 +292,11 @@
 
                         <td>
                             #{{ booking.booking_id }}
+                        </td>
+
+                        <td>
+                            {{ booking.booking_date.strftime('%d-%m-%Y') }}<br>
+                            <strong>{{ booking.booking_date.strftime('%I:%M %p') }}</strong>
                         </td>
 
                         <td>
@@ -212,6 +319,22 @@
                             {{ booking.vehicle_type }}
                         </td>
 
+                        <td>
+                            {% if booking.driver_name %}
+
+                            <strong>{{ booking.driver_name }}</strong><br>
+
+                            📞 {{ booking.driver_mobile }}
+
+                            {% else %}
+
+                            <span style="color:#6b7280;">
+                                Driver not assigned
+                            </span>
+
+                            {% endif %}
+                        </td>
+
 
                         <!-- FARE BREAKUP -->
 
@@ -219,24 +342,24 @@
 
                             {% if booking.fare is not none %}
 
-                                <div class="driver-fare">
-                                    Driver Fare:
-                                    ₹{{ "%.2f"|format(booking.driver_earning) }}
-                                </div>
+                            <div class="driver-fare">
+                                Driver Fare:
+                                ₹{{ "%.2f"|format(booking.driver_earning) }}
+                            </div>
 
-                                <div class="platform-fee">
-                                    Platform Fee:
-                                    ₹{{ "%.2f"|format(booking.platform_charge) }}
-                                </div>
+                            <div class="platform-fee">
+                                Platform Fee:
+                                ₹{{ "%.2f"|format(booking.platform_charge) }}
+                            </div>
 
-                                <div class="total-fare">
-                                    Total:
-                                    ₹{{ "%.2f"|format(booking.fare) }}
-                                </div>
+                            <div class="total-fare">
+                                Total:
+                                ₹{{ "%.2f"|format(booking.fare) }}
+                            </div>
 
                             {% else %}
 
-                                Calculating...
+                            Calculating...
 
                             {% endif %}
 
@@ -247,6 +370,50 @@
 
                         <td class="status">
                             {{ booking.status }}
+                        </td>
+
+                        <!-- PAYMENT -->
+
+                        <td>
+
+                            {% if booking.status == 'Delivered' %}
+
+                            {% if booking.payment_status == 'Paid' %}
+
+                            <span style="color:#16a34a; font-weight:700;">
+                                ✓ Paid
+                            </span>
+
+                            <br><br>
+
+                            <a href="{{ url_for('payment_receipt', booking_id=booking.booking_id) }}"
+                                class="btn primary-btn" style="font-size:13px; padding:8px 12px;">
+                                View Receipt
+                            </a>
+
+                            {% else %}
+
+                            <span style="color:#d97706; font-weight:600;">
+                                Payment Pending
+                            </span>
+
+                            <br><br>
+
+                            <a href="{{ url_for('make_payment', booking_id=booking.booking_id) }}"
+                                class="btn primary-btn" style="font-size:13px; padding:8px 12px;">
+                                Pay Now
+                            </a>
+
+                            {% endif %}
+
+                            {% else %}
+
+                            <span style="color:#6b7280;">
+                                Not Available
+                            </span>
+
+                            {% endif %}
+
                         </td>
 
                     </tr>
@@ -264,8 +431,7 @@
 
         <!-- NO BOOKINGS -->
 
-        <div class="service-card"
-             style="max-width:500px; margin:30px auto;">
+        <div class="service-card" style="max-width:500px; margin:30px auto;">
 
             <h3>
                 No Bookings Yet
@@ -277,8 +443,7 @@
 
             <br>
 
-            <a href="{{ url_for('book_vehicle') }}"
-               class="btn primary-btn">
+            <a href="{{ url_for('book_vehicle') }}" class="btn primary-btn">
 
                 Book a Vehicle
 

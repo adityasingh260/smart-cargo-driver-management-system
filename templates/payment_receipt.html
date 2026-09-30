@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Payment Receipt - Smart Cargo</title>
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<style>
+
+    .receipt-container {
+        max-width: 750px;
+        margin: 50px auto;
+    }
+
+    .receipt-card {
+        padding: 35px;
+    }
+
+    .receipt-header {
+        text-align: center;
+        border-bottom: 2px solid #dbeafe;
+        padding-bottom: 20px;
+        margin-bottom: 25px;
+    }
+
+    .receipt-header h1 {
+        color: #2563eb;
+        margin-bottom: 5px;
+    }
+
+    .success-message {
+        text-align: center;
+        color: #16a34a;
+        font-weight: 700;
+        font-size: 18px;
+        margin-bottom: 25px;
+    }
+
+    .receipt-section {
+        margin-top: 25px;
+    }
+
+    .receipt-section h3 {
+        color: #1e3a8a;
+        margin-bottom: 12px;
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 8px;
+    }
+
+    .receipt-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 8px 0;
+    }
+
+    .receipt-total {
+        border-top: 2px solid #d1d5db;
+        margin-top: 10px;
+        padding-top: 12px;
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+    .paid {
+        color: #16a34a;
+        font-weight: 700;
+    }
+
+    .transaction {
+        font-family: monospace;
+        background: #f3f4f6;
+        padding: 4px 7px;
+        border-radius: 5px;
+    }
+
+    .receipt-actions {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .print-btn {
+        margin-right: 10px;
+    }
+
+    .demo-note {
+        text-align: center;
+        margin-top: 25px;
+        padding: 12px;
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        border-radius: 8px;
+        color: #9a3412;
+        font-size: 13px;
+    }
+
+    @media print {
+
+        .navbar,
+        footer,
+        .receipt-actions,
+        .demo-note {
+            display: none !important;
+        }
+
+        body {
+            background: white !important;
+        }
+
+        .receipt-container {
+            margin: 0 auto;
+        }
+
+        .receipt-card {
+            box-shadow: none !important;
+        }
+
+    }
+
+    /* Dark Mode */
+
+    body.dark-mode .receipt-section h3 {
+        color: #bfdbfe;
+    }
+
+    body.dark-mode .receipt-section h3 {
+        border-color: #374151;
+    }
+
+    body.dark-mode .transaction {
+        background: #1f2937;
+        color: white;
+    }
+
+    body.dark-mode .receipt-total {
+        border-color: #4b5563;
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+```
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        Smart Cargo
+    </div>
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('customer_dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('my_bookings') }}">
+            My Bookings
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- RECEIPT -->
+
+<section class="section">
+
+    <div class="receipt-container">
+
+        <div class="service-card receipt-card">
+
+            <div class="receipt-header">
+
+                <h1>
+                    SMART CARGO
+                </h1>
+
+                <p>
+                    Payment Receipt
+                </p>
+
+            </div>
+
+
+            <div class="success-message">
+
+                ✓ Payment Successful
+
+            </div>
+
+
+            <!-- BOOKING DETAILS -->
+
+            <div class="receipt-section">
+
+                <h3>
+                    Booking Details
+                </h3>
+
+                <div class="receipt-row">
+                    <span>Booking ID</span>
+                    <strong>#{{ booking.booking_id }}</strong>
+                </div>
+
+                <div class="receipt-row">
+                    <span>Booking Date</span>
+                    <span>
+                        {{ booking.booking_date.strftime('%d-%m-%Y') }}
+                    </span>
+                </div>
+
+                <div class="receipt-row">
+                    <span>Pickup</span>
+                    <span>{{ booking.pickup_location }}</span>
+                </div>
+
+                <div class="receipt-row">
+                    <span>Drop</span>
+                    <span>{{ booking.drop_location }}</span>
+                </div>
+
+                <div class="receipt-row">
+                    <span>Goods</span>
+                    <span>{{ booking.goods_type }}</span>
+                </div>
+
+                <div class="receipt-row">
+                    <span>Vehicle</span>
+                    <span>{{ booking.vehicle_type }}</span>
+                </div>
+
+            </div>
+
+
+            <!-- CUSTOMER DETAILS -->
+
+            <div class="receipt-section">
+
+                <h3>
+                    Customer Details
+                </h3>
+
+                <div class="receipt-row">
+                    <span>Name</span>
+                    <span>{{ booking.customer_name }}</span>
+                </div>
+
+                <div class="receipt-row">
+                    <span>Mobile</span>
+                    <span>{{ booking.customer_mobile }}</span>
+                </div>
+
+                <div class="receipt-row">
+                    <span>Email</span>
+                    <span>{{ booking.customer_email }}</span>
+                </div>
+
+            </div>
+
+
+            <!-- PAYMENT DETAILS -->
+
+            <div class="receipt-section">
+
+                <h3>
+                    Payment Details
+                </h3>
+
+                <div class="receipt-row">
+                    <span>Driver Fare (80%)</span>
+                    <strong>
+                        ₹{{ "%.2f"|format(booking.driver_earning) }}
+                    </strong>
+                </div>
+
+                <div class="receipt-row">
+                    <span>Platform Fee (20%)</span>
+                    <strong>
+                        ₹{{ "%.2f"|format(booking.platform_charge) }}
+                    </strong>
+                </div>
+
+                <div class="receipt-row receipt-total">
+                    <span>Total Paid</span>
+                    <span>
+                        ₹{{ "%.2f"|format(booking.fare) }}
+                    </span>
+                </div>
+
+                <div class="receipt-row">
+                    <span>Payment Method</span>
+                    <span>
+                        {{ booking.payment_method }}
+                    </span>
+                </div>
+
+                <div class="receipt-row">
+                    <span>Transaction ID</span>
+                    <span class="transaction">
+                        {{ booking.transaction_id }}
+                    </span>
+                </div>
+
+                <div class="receipt-row">
+                    <span>Payment Status</span>
+                    <span class="paid">
+                        ✓ PAID
+                    </span>
+                </div>
+
+            </div>
+
+
+            <!-- ACTION BUTTONS -->
+
+            <div class="receipt-actions">
+
+                <button
+                    onclick="window.print()"
+                    class="btn primary-btn print-btn"
+                >
+                    🖨 Print Receipt
+                </button>
+
+                <a
+                    href="{{ url_for('my_bookings') }}"
+                    class="btn"
+                >
+                    Back to Bookings
+                </a>
+
+            </div>
+
+
+            <div class="demo-note">
+
+                This is a simulated payment receipt created
+                for project demonstration. No real money was charged.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    <h3>
+        Smart Cargo & Driver Management System
+    </h3>
+
+    <p>
+        Smart solution for modern goods transportation.
+    </p>
+
+</footer>
+
+
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+```
+
+</body>
+
+</html>

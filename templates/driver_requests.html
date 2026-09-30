@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Booking Requests - Smart Cargo</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
@@ -87,6 +88,15 @@
                     Booking #{{ request.booking_id }}
                 </h2>
 
+                <p>
+                    <strong>Booking Date:</strong>
+                    {{ request.booking_date.strftime('%d-%m-%Y') }}
+                </p>
+
+                <p>
+                    <strong>Booking Time:</strong>
+                    {{ request.booking_date.strftime('%I:%M %p') }}
+                </p>
 
                 <p>
                     <strong>Pickup:</strong>
@@ -97,6 +107,18 @@
                 <p>
                     <strong>Drop:</strong>
                     {{ request.drop_location }}
+                </p>
+
+                <!-- CUSTOMER CONTACT -->
+
+                <p>
+                    <strong>Customer:</strong>
+                    {{ request.customer_name }}
+                </p>
+
+                <p>
+                    <strong>Customer Mobile:</strong>
+                    📞 {{ request.customer_mobile }}
                 </p>
 
 
@@ -148,10 +170,40 @@
 
                 <!-- DRIVER EARNING -->
 
+                <!-- DRIVER PAYMENT DETAILS -->
+
                 <p>
-                    <strong>Driver Earning:</strong>
+                    <strong>Driver Earning (80%):</strong>
                     ₹{{ "%.2f"|format(request.driver_earning) }}
                 </p>
+
+                <p>
+                    <strong>Payment Status:</strong>
+
+                    {% if request.payment_status == 'Paid' %}
+
+                    <span style="color:#16a34a; font-weight:700;">
+                        ✓ Paid
+                    </span>
+
+                    {% else %}
+
+                    <span style="color:#d97706; font-weight:600;">
+                        Payment Pending
+                    </span>
+
+                    {% endif %}
+
+                </p>
+
+                {% if request.payment_status == 'Paid' and request.payment_method %}
+
+                <p>
+                    <strong>Payment Method:</strong>
+                    {{ request.payment_method }}
+                </p>
+
+                {% endif %}
 
                 <p>
                     <strong>Status:</strong>

@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Customer Management - Smart Cargo</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/style.css') }}">
@@ -49,7 +51,7 @@
         .customer-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 700px;
+            min-width: 900px;
         }
 
         .customer-table th {
@@ -82,6 +84,59 @@
             color: #555;
         }
 
+        /* STATUS */
+
+        .status-active {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #dcfce7;
+            color: #166534;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .status-blocked {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #fee2e2;
+            color: #991b1b;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* ACTION BUTTONS */
+
+        .block-btn,
+        .unblock-btn {
+            display: inline-block;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .block-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .block-btn:hover {
+            background: #b91c1c;
+        }
+
+        .unblock-btn {
+            background: #16a34a;
+            color: white;
+        }
+
+        .unblock-btn:hover {
+            background: #15803d;
+        }
+
         .back-btn {
             display: inline-block;
             margin-top: 20px;
@@ -107,26 +162,44 @@
 <body>
 
     <!-- NAVBAR -->
+
     <nav class="navbar">
+
         <div class="logo">
             Smart Cargo
         </div>
 
         <div class="nav-links">
-            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
+
+            <a href="{{ url_for('admin_dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
         </div>
+
     </nav>
 
 
     <!-- MAIN CONTENT -->
+
     <div class="page-container">
 
         <div class="page-header">
 
             <div>
-                <h1>Customer Management</h1>
-                <p>View all registered customers</p>
+
+                <h1>
+                    Customer Management
+                </h1>
+
+                <p>
+                    View and manage registered customers
+                </p>
+
             </div>
 
             <div class="customer-count">
@@ -143,14 +216,25 @@
             <table class="customer-table">
 
                 <thead>
+
                     <tr>
+
                         <th>ID</th>
+
                         <th>Customer Name</th>
+
                         <th>Email</th>
+
                         <th>Mobile</th>
-                        <th>Account Type</th>
+
+                        <th>Status</th>
+
+                        <th>Action</th>
+
                     </tr>
+
                 </thead>
+
 
                 <tbody>
 
@@ -162,20 +246,85 @@
                             #{{ customer.user_id }}
                         </td>
 
+
                         <td class="customer-name">
                             {{ customer.name }}
                         </td>
+
 
                         <td class="email">
                             {{ customer.email }}
                         </td>
 
+
                         <td>
                             {{ customer.mobile }}
                         </td>
 
+
+                        <!-- STATUS -->
+
                         <td>
-                            Customer
+
+                            {% if customer.is_blocked %}
+
+                                <span class="status-blocked">
+                                    🔴 Blocked
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-active">
+                                    🟢 Active
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ACTION -->
+
+                        <td>
+
+                            {% if customer.is_blocked %}
+
+                                <form
+                                    action="{{ url_for('admin_toggle_customer', user_id=customer.user_id) }}"
+                                    method="POST"
+                                    style="display:inline;"
+                                    onsubmit="return confirm('Unblock this customer?');"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="unblock-btn"
+                                    >
+                                        🔓 Unblock
+                                    </button>
+
+                                </form>
+
+                            {% else %}
+
+                                <form
+                                    action="{{ url_for('admin_toggle_customer', user_id=customer.user_id) }}"
+                                    method="POST"
+                                    style="display:inline;"
+                                    onsubmit="return confirm('Block this customer?');"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="block-btn"
+                                    >
+                                        🔒 Block
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
                         </td>
 
                     </tr>
@@ -189,8 +338,15 @@
             {% else %}
 
             <div class="empty-message">
-                <h3>No Customers Found</h3>
-                <p>No customer has registered yet.</p>
+
+                <h3>
+                    No Customers Found
+                </h3>
+
+                <p>
+                    No customer has registered yet.
+                </p>
+
             </div>
 
             {% endif %}
@@ -198,7 +354,10 @@
         </div>
 
 
-        <a href="{{ url_for('admin_dashboard') }}" class="back-btn">
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="back-btn"
+        >
             ← Back to Dashboard
         </a>
 
@@ -206,10 +365,20 @@
 
 
     <!-- FOOTER -->
+
     <footer class="footer">
-        <p>© 2026 Smart Cargo & Driver Management System</p>
+
+        <p>
+            © 2026 Smart Cargo & Driver Management System
+        </p>
+
     </footer>
-<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-<script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+
 </body>
 </html>
+```

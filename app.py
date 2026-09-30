@@ -124,6 +124,18 @@ def login():
 
         if user:
 
+            # ==========================================
+            # CHECK IF CUSTOMER IS BLOCKED
+            # ==========================================
+
+            if user["role"] == "customer" and user["is_blocked"]:
+
+                return "Your account has been blocked by admin."
+
+            # ==========================================
+            # CREATE SESSION
+            # ==========================================
+
             session["user_id"] = user["user_id"]
             session["name"] = user["name"]
             session["role"] = user["role"]
@@ -645,7 +657,7 @@ def book_vehicle():
     return render_template("book_vehicle.html")
 
 # ==========================================
-# MY BOOKINGS
+# MY BOOKINGS WITH FILTERS
 # ==========================================
 
 @app.route("/my-bookings")
@@ -659,26 +671,74 @@ def my_bookings():
 
     user_id = session["user_id"]
 
+    # Filters
+    status_filter = request.args.get("status", "")
+    vehicle_filter = request.args.get("vehicle_type", "")
+    date_filter = request.args.get("date", "")
+
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
 
+    # Base query
     query = """
-    SELECT *
-    FROM bookings
-    WHERE user_id = %s
-    ORDER BY booking_date DESC
+        SELECT
+            b.*,
+            u.name AS driver_name,
+            u.mobile AS driver_mobile
+        FROM bookings b
+        LEFT JOIN drivers d
+            ON b.driver_id = d.driver_id
+        LEFT JOIN users u
+            ON d.user_id = u.user_id
+        WHERE b.user_id = %s
     """
 
-    cursor.execute(query, (user_id,))
+    params = [user_id]
+
+    # Status filter
+    if status_filter:
+        query += " AND b.status = %s"
+        params.append(status_filter)
+
+    # Vehicle filter
+    if vehicle_filter:
+        query += " AND b.vehicle_type = %s"
+        params.append(vehicle_filter)
+
+    # Date filter
+    if date_filter:
+        query += " AND DATE(b.booking_date) = %s"
+        params.append(date_filter)
+
+    # Latest booking first
+    query += " ORDER BY b.booking_date DESC"
+
+    cursor.execute(query, tuple(params))
 
     bookings = cursor.fetchall()
+
+    # Get vehicle types for dropdown
+    cursor.execute("""
+        SELECT DISTINCT vehicle_type
+        FROM bookings
+        WHERE user_id = %s
+        AND vehicle_type IS NOT NULL
+        AND vehicle_type != ''
+        ORDER BY vehicle_type
+    """, (user_id,))
+
+    vehicle_types = [
+        row["vehicle_type"]
+        for row in cursor.fetchall()
+    ]
 
     cursor.close()
     connection.close()
 
     return render_template(
         "my_bookings.html",
-        bookings=bookings
+        bookings=bookings,
+        vehicle_types=vehicle_types
     )
 
 
@@ -697,6 +757,12 @@ def admin_dashboard():
 
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
+
+    cursor.execute("SELECT DATABASE() AS db_name")
+    print("🔥 FLASK DB:", cursor.fetchone()["db_name"])
+
+    cursor.execute("SHOW COLUMNS FROM users LIKE 'status'")
+    print("🔥 FLASK STATUS COLUMN:", cursor.fetchall())
 
     # Customer count
     cursor.execute(
@@ -719,6 +785,20 @@ def admin_dashboard():
 
     booking_count = cursor.fetchone()["total"]
 
+   # Customer list
+    cursor.execute("""
+       SELECT
+        user_id,
+        name,
+        email,
+        mobile
+    FROM users
+    WHERE role = 'customer'
+    ORDER BY user_id DESC
+    """)
+
+    customers = cursor.fetchall()
+
     # Pending bookings
     query = """
     SELECT
@@ -739,13 +819,63 @@ def admin_dashboard():
     connection.close()
 
     return render_template(
-        "admin_dashboard.html",
-        customer_count=customer_count,
-        driver_count=driver_count,
-        booking_count=booking_count,
-        bookings=bookings
+    "admin_dashboard.html",
+    customer_count=customer_count,
+    driver_count=driver_count,
+    booking_count=booking_count,
+    bookings=bookings,
+    customers=customers
+)
+
+# ==========================================
+# ADMIN - BLOCK / UNBLOCK CUSTOMER
+# ==========================================
+
+@app.route("/admin-toggle-customer/<int:user_id>", methods=["POST"])
+def admin_toggle_customer(user_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("role") != "admin":
+        return "Access Denied!"
+
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    # Current block status check
+    cursor.execute(
+        """
+        SELECT is_blocked
+        FROM users
+        WHERE user_id=%s AND role='customer'
+        """,
+        (user_id,)
     )
 
+    customer = cursor.fetchone()
+
+    if customer:
+
+        # 0 -> 1 (Block)
+        # 1 -> 0 (Unblock)
+        new_status = 0 if customer["is_blocked"] else 1
+
+        cursor.execute(
+            """
+            UPDATE users
+            SET is_blocked=%s
+            WHERE user_id=%s AND role='customer'
+            """,
+            (new_status, user_id)
+        )
+
+        connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    return redirect(url_for("admin_customers"))
 
 # ==========================================
 # ADMIN - ALL BOOKINGS
@@ -774,6 +904,8 @@ def admin_all_bookings():
             b.weight_kg,
             b.vehicle_type,
             b.fare,
+            b.platform_charge,
+            b.payment_status,
             b.status,
             b.booking_date,
             d.driver_id,
@@ -824,7 +956,8 @@ def admin_customers():
             user_id,
             name,
             email,
-            mobile
+            mobile,
+            is_blocked
         FROM users
         WHERE role = 'customer'
         ORDER BY user_id DESC
@@ -839,7 +972,6 @@ def admin_customers():
         "admin_customers.html",
         customers=customers
     )
-
 # ==========================================
 # ADMIN - DRIVER MANAGEMENT
 # ==========================================
@@ -920,6 +1052,7 @@ def admin_update_driver_status(driver_id, status):
 
     return redirect(url_for("admin_drivers"))
 
+
 # ==========================================
 # DRIVER REQUESTS
 # ==========================================
@@ -945,14 +1078,17 @@ def driver_requests():
             notifications.created_at,
 
             bookings.booking_id,
+            bookings.booking_date,
             bookings.pickup_location,
             bookings.drop_location,
             bookings.goods_type,
             bookings.goods_photo,
             bookings.weight_kg,
             bookings.vehicle_type,
+            bookings.driver_earning,
 
-            bookings.driver_earning
+            users.name AS customer_name,
+            users.mobile AS customer_mobile
 
         FROM notifications
 
@@ -961,6 +1097,9 @@ def driver_requests():
 
         JOIN drivers
             ON notifications.driver_id = drivers.driver_id
+
+        JOIN users
+            ON bookings.user_id = users.user_id
 
         WHERE drivers.user_id = %s
 
@@ -978,6 +1117,7 @@ def driver_requests():
         "driver_requests.html",
         requests=requests
     )
+
 
 # ==========================================
 # DRIVER ACCEPT BOOKING
@@ -1691,6 +1831,205 @@ def delivery_status():
 
 
 # ==========================================
+# MAKE PAYMENT
+# ==========================================
+
+@app.route("/make-payment/<int:booking_id>")
+def make_payment(booking_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("role") != "customer":
+        return "Access Denied!"
+
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM bookings
+        WHERE booking_id = %s
+        AND user_id = %s
+        """,
+        (booking_id, session["user_id"])
+    )
+
+    booking = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+
+    if not booking:
+        return "Booking not found!"
+
+    # Payment only after delivery
+    if booking["status"] != "Delivered":
+        return "Payment is available only after delivery."
+
+    # Already paid
+    if booking["payment_status"] == "Paid":
+        return redirect(
+            url_for(
+                "payment_receipt",
+                booking_id=booking_id
+            )
+        )
+
+    return render_template(
+        "payment.html",
+        booking=booking
+    )
+
+# ==========================================
+# PROCESS PAYMENT
+# ==========================================
+
+@app.route("/process-payment/<int:booking_id>", methods=["POST"])
+def process_payment(booking_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("role") != "customer":
+        return "Access Denied!"
+
+    payment_method = request.form.get("payment_method")
+
+    allowed_methods = [
+        "UPI",
+        "Card",
+        "Net Banking"
+    ]
+
+    if payment_method not in allowed_methods:
+        return "Invalid payment method!"
+
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    # Get customer's booking
+    cursor.execute(
+        """
+        SELECT *
+        FROM bookings
+        WHERE booking_id = %s
+        AND user_id = %s
+        """,
+        (booking_id, session["user_id"])
+    )
+
+    booking = cursor.fetchone()
+
+    if not booking:
+        cursor.close()
+        connection.close()
+        return "Booking not found!"
+
+    # Payment only after delivery
+    if booking["status"] != "Delivered":
+        cursor.close()
+        connection.close()
+        return "Payment is available only after delivery."
+
+    # Prevent duplicate payment
+    if booking["payment_status"] == "Paid":
+        cursor.close()
+        connection.close()
+
+        return redirect(
+            url_for(
+                "payment_receipt",
+                booking_id=booking_id
+            )
+        )
+
+    # Generate demo transaction ID
+    transaction_id = "DEMO-TXN-" + str(booking_id) + "-" + str(session["user_id"])
+
+    # Save payment
+    cursor.execute(
+        """
+        UPDATE bookings
+        SET
+            payment_status = 'Paid',
+            payment_method = %s,
+            transaction_id = %s
+        WHERE booking_id = %s
+        AND user_id = %s
+        """,
+        (
+            payment_method,
+            transaction_id,
+            booking_id,
+            session["user_id"]
+        )
+    )
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    return redirect(
+        url_for(
+            "payment_receipt",
+            booking_id=booking_id
+        )
+    )
+
+
+# ==========================================
+# PAYMENT RECEIPT
+# ==========================================
+
+@app.route("/payment-receipt/<int:booking_id>")
+def payment_receipt(booking_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("role") != "customer":
+        return "Access Denied!"
+
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    cursor.execute(
+        """
+        SELECT
+            b.*,
+            u.name AS customer_name,
+            u.email AS customer_email,
+            u.mobile AS customer_mobile
+        FROM bookings b
+        JOIN users u
+            ON b.user_id = u.user_id
+        WHERE b.booking_id = %s
+        AND b.user_id = %s
+        """,
+        (booking_id, session["user_id"])
+    )
+
+    booking = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+
+    if not booking:
+        return "Booking not found!"
+
+    if booking["payment_status"] != "Paid":
+        return "Payment has not been completed."
+
+    return render_template(
+        "payment_receipt.html",
+        booking=booking
+    )
+
+
+# ==========================================
 # UPDATE DELIVERY STATUS
 # ==========================================
 
@@ -1725,6 +2064,18 @@ def update_delivery_status(booking_id):
     driver_id = driver["driver_id"]
 
     new_status = request.form.get("status")
+
+    if new_status == "Delivered":
+
+     cursor.execute(
+        """
+        UPDATE bookings
+        SET payment_status = 'Pending'
+        WHERE booking_id = %s
+        AND driver_id = %s
+        """,
+        (booking_id, driver_id)
+    )
 
     allowed_statuses = [
         "Reached Pickup",
