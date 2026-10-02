@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Reports - Smart Cargo</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .reports-page {
+            min-height: 100vh;
+            padding: 40px 25px;
+        }
+
+        .reports-container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .reports-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .reports-header h1 {
+            margin-bottom: 8px;
+        }
+
+        .reports-header p {
+            opacity: 0.75;
+        }
+
+        .reports-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .reports-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        .reports-table th,
+        .reports-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .reports-table th {
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .reports-table td {
+            vertical-align: top;
+        }
+
+        .description-cell {
+            max-width: 300px;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        /* STATUS */
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .pending {
+            background: rgba(255, 193, 7, 0.18);
+        }
+
+        .resolved {
+            background: rgba(40, 167, 69, 0.18);
+        }
+
+        /* RESOLVE BUTTON */
+
+        .resolve-btn {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            background: #198754;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .resolve-btn:hover {
+            opacity: 0.85;
+            transform: translateY(-1px);
+        }
+
+        .already-resolved {
+            font-size: 13px;
+            opacity: 0.7;
+        }
+
+        .empty-reports {
+            text-align: center;
+            padding: 50px 20px;
+            opacity: 0.75;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 25px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="reports-page">
+
+        <div class="reports-container">
+
+            <div class="reports-header">
+
+                <h1>⚠️ Customer & Driver Reports</h1>
+
+                <p>
+                    View and manage issues submitted by customers and drivers.
+                </p>
+
+            </div>
+
+
+            {% if reports %}
+
+            <div class="reports-table-wrapper">
+
+                <table class="reports-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Report ID</th>
+
+                            <th>User</th>
+
+                            <th>Role</th>
+
+                            <th>Issue Type</th>
+
+                            <th>Booking ID</th>
+
+                            <th>Description</th>
+
+                            <th>Status</th>
+
+                            <th>Action</th>
+
+                            <th>Date</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for report in reports %}
+
+                        <tr>
+
+                            <!-- REPORT ID -->
+
+                            <td>
+                                #{{ report.report_id }}
+                            </td>
+
+
+                            <!-- USER -->
+
+                            <td>
+
+                                {{ report.name }}
+
+                                <br>
+
+                                <small>
+                                    {{ report.email }}
+                                </small>
+
+                            </td>
+
+
+                            <!-- ROLE -->
+
+                            <td>
+                                {{ report.role|capitalize }}
+                            </td>
+
+
+                            <!-- ISSUE TYPE -->
+
+                            <td>
+                                {{ report.issue_type }}
+                            </td>
+
+
+                            <!-- BOOKING ID -->
+
+                            <td>
+
+                                {% if report.booking_id %}
+
+                                    #{{ report.booking_id }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- DESCRIPTION -->
+
+                            <td class="description-cell">
+
+                                {{ report.description }}
+
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+                                {% if report.status == "Pending" %}
+
+                                    <span class="status pending">
+                                        Pending
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status resolved">
+                                        ✓ Resolved
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- ACTION -->
+
+                            <td>
+
+                                {% if report.status == "Pending" %}
+
+                                    <a
+                                        href="{{ url_for('resolve_report', report_id=report.report_id) }}"
+                                        class="resolve-btn"
+                                    >
+                                        ✓ Resolve
+                                    </a>
+
+                                {% else %}
+
+                                    <span class="already-resolved">
+                                        Completed
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- DATE -->
+
+                            <td>
+                                {{ report.created_at }}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            {% else %}
+
+            <div class="empty-reports">
+
+                <h2>No Reports Found</h2>
+
+                <p>
+                    No issues have been reported by any customer or driver yet.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="back-btn"
+            >
+                ← Back to Admin Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+
+</body>
+
+</html>

@@ -2113,6 +2113,275 @@ def update_delivery_status(booking_id):
     return redirect(url_for("delivery_status"))
 
 # ==========================================
+# REPORT ISSUE - CUSTOMER / DRIVER
+# ==========================================
+
+@app.route("/report-issue", methods=["GET", "POST"])
+def report_issue():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    user_id = session["user_id"]
+    role = session.get("role")
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # ------------------------------------------
+    # CUSTOMER: Sirf apni bookings
+    # DRIVER: Sirf assigned bookings
+    # ------------------------------------------
+
+    if role == "customer":
+
+        cursor.execute("""
+            SELECT booking_id
+            FROM bookings
+            WHERE user_id = %s
+            ORDER BY booking_id DESC
+        """, (user_id,))
+
+    elif role == "driver":
+
+        cursor.execute("""
+            SELECT booking_id
+            FROM bookings
+            WHERE driver_id = %s
+            ORDER BY booking_id DESC
+        """, (user_id,))
+
+    else:
+        cursor.close()
+        conn.close()
+        return "Access Denied!"
+
+    bookings = cursor.fetchall()
+
+    # ------------------------------------------
+    # REPORT SUBMIT
+    # ------------------------------------------
+
+    if request.method == "POST":
+
+        issue_type = request.form.get("issue_type")
+        booking_id = request.form.get("booking_id")
+        description = request.form.get("description")
+
+        # Booking ID optional hai
+        if not booking_id:
+            booking_id = None
+
+        # ------------------------------------------
+        # BACKEND SECURITY CHECK
+        # ------------------------------------------
+
+        if booking_id:
+
+            if role == "customer":
+
+                cursor.execute("""
+                    SELECT booking_id
+                    FROM bookings
+                    WHERE booking_id = %s
+                    AND user_id = %s
+                """, (booking_id, user_id))
+
+            elif role == "driver":
+
+                cursor.execute("""
+                    SELECT booking_id
+                    FROM bookings
+                    WHERE booking_id = %s
+                    AND driver_id = %s
+                """, (booking_id, user_id))
+
+            valid_booking = cursor.fetchone()
+
+            # Agar booking user ki nahi hai
+            if not valid_booking:
+                cursor.close()
+                conn.close()
+                return "Invalid Booking ID!"
+
+        # ------------------------------------------
+        # SAVE REPORT
+        # ------------------------------------------
+
+        cursor.execute("""
+            INSERT INTO reports
+            (user_id, issue_type, booking_id, description)
+            VALUES (%s, %s, %s, %s)
+        """, (
+            user_id,
+            issue_type,
+            booking_id,
+            description
+        ))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        return redirect(url_for("report_issue"))
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "report_issue.html",
+        bookings=bookings,
+        role=role
+    )
+
+# ==========================================
+# ADMIN - VIEW REPORTS
+# ==========================================
+
+@app.route("/admin-reports")
+def admin_reports():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("role") != "admin":
+        return "Access Denied!"
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            reports.report_id,
+            reports.issue_type,
+            reports.booking_id,
+            reports.description,
+            reports.status,
+            reports.created_at,
+            users.name,
+            users.email,
+            users.role
+        FROM reports
+        JOIN users ON reports.user_id = users.user_id
+        ORDER BY reports.created_at DESC
+    """)
+
+    reports = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("admin_reports.html", reports=reports)
+
+# ==========================================
+# ADMIN - RESOLVE REPORT
+# ==========================================
+@app.route("/resolve-report/<int:report_id>")
+def resolve_report(report_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("role") != "admin":
+        return "Access Denied!"
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE reports
+        SET status = 'Resolved'
+        WHERE report_id = %s
+    """, (report_id,))
+
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    return redirect(url_for("admin_reports"))
+
+# ==========================================
+# CONTACT US - CUSTOMER / DRIVER
+# ==========================================
+
+@app.route("/contact-us", methods=["GET", "POST"])
+def contact_us():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+
+        subject = request.form.get("subject")
+        message = request.form.get("message")
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO contact_messages
+            (user_id, subject, message)
+            VALUES (%s, %s, %s)
+        """, (
+            session["user_id"],
+            subject,
+            message
+        ))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        return redirect(url_for("contact_us"))
+
+    return render_template("contact_us.html")
+
+# ==========================================
+# ADMIN - VIEW CONTACT MESSAGES
+# ==========================================
+
+@app.route("/admin-messages")
+def admin_messages():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("role") != "admin":
+        return "Access Denied!"
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT
+            contact_messages.message_id,
+            contact_messages.subject,
+            contact_messages.message,
+            contact_messages.status,
+            contact_messages.created_at,
+            users.name,
+            users.email,
+            users.role
+        FROM contact_messages
+        JOIN users
+        ON contact_messages.user_id = users.user_id
+        ORDER BY contact_messages.created_at DESC
+    """)
+
+    messages = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "admin_messages.html",
+        messages=messages
+    )
+
+# ==========================================
 # RUN
 # ==========================================
 print(app.url_map)

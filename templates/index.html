@@ -317,8 +317,8 @@
 
 
     <!-- =====================================================
-         HERO SECTION
-         ===================================================== -->
+     HERO SECTION
+     ===================================================== -->
 
     <section class="hero" id="home">
 
@@ -329,10 +329,77 @@
                 <span>Management System</span>
             </h1>
 
+
+            <!-- TAGLINE / QUOTES -->
+
+            <div class="hero-quotes" style="
+        text-align: center;
+        margin: 20px auto;
+        overflow: hidden;
+     ">
+
+                <h2 style="
+        margin: 0 0 10px;
+        color: #ff7700;
+        overflow: hidden;
+        white-space: nowrap;
+        width: 0;
+        margin-left: auto;
+        margin-right: auto;
+        border-right: 2px solid currentColor;
+        animation: quoteTyping 4s steps(55, end) 0.5s forwards,
+                   quoteCursor 0.7s step-end infinite,
+                   removeCursor 0.5s forwards 4.5s;
+    ">
+                    “ 🚚 Aapka Samaan Sirf Cargo Nahi, Aapki Zaroorat Hai.”
+                </h2>
+
+                <p style="
+        margin: 0;
+        color: #ff7700;
+        overflow: hidden;
+        white-space: nowrap;
+        width: 0;
+        margin-left: auto;
+        margin-right: auto;
+        border-right: 2px solid currentColor;
+        animation: quoteTyping 4s steps(55, end) 4.8s forwards,
+                   quoteCursor 0.7s step-end infinite,
+                   removeCursor 0.5s forwards 8.8s;
+    ">
+                    “Aap Nischint Rahiye, Aapka Cargo Hamari Zimmedari. ❤️ ”
+                </p>
+
+            </div>
+
+            <style>
+                @keyframes quoteTyping {
+
+                    from {
+                        width: 0;
+                    }
+
+                    to {
+                        width: 100%;
+                    }
+
+                }
+
+                @keyframes removeCursor {
+
+                    to {
+                        border-right-color: transparent;
+                    }
+
+                }
+            </style>
+
+
             <p>
                 A smart and reliable platform to connect customers
                 with suitable cargo vehicles and drivers.
             </p>
+
 
             <div class="hero-buttons">
 
@@ -346,64 +413,67 @@
 
             </div>
 
+        </div>
 
-            <!-- =================================================
+    </section>
+
+    <!-- =================================================
                  ANIMATED TRUCK
                  ================================================= -->
 
-            <div class="hero-vehicle">
+    <div class="hero-vehicle">
 
-                <!-- Speed Lines -->
+        <!-- Speed Lines -->
 
-                <div class="speed-line speed-one"></div>
-                <div class="speed-line speed-two"></div>
-                <div class="speed-line speed-three"></div>
-
-
-                <!-- Road -->
-
-                <div class="road"></div>
+        <div class="speed-line speed-one"></div>
+        <div class="speed-line speed-two"></div>
+        <div class="speed-line speed-three"></div>
 
 
-                <!-- Truck -->
+        <!-- Road -->
 
-                <div class="truck">
-
-                    <!-- Cargo Body -->
-
-                    <div class="truck-body">
-
-                        <div class="cargo-box"></div>
-
-                    </div>
+        <div class="road"></div>
 
 
-                    <!-- Cabin -->
+        <!-- Truck -->
 
-                    <div class="truck-cabin"></div>
+        <div class="truck">
 
+            <!-- Cargo Body -->
 
-                    <!-- Window -->
+            <div class="truck-body">
 
-                    <div class="truck-window"></div>
-
-
-                    <!-- Front Light -->
-
-                    <div class="truck-light"></div>
-
-
-                    <!-- Wheels -->
-
-                    <div class="wheel wheel-one"></div>
-
-                    <div class="wheel wheel-two"></div>
-
-                </div>
+                <div class="cargo-box"></div>
 
             </div>
 
+
+            <!-- Cabin -->
+
+            <div class="truck-cabin"></div>
+
+
+            <!-- Window -->
+
+            <div class="truck-window"></div>
+
+
+            <!-- Front Light -->
+
+            <div class="truck-light"></div>
+
+
+            <!-- Wheels -->
+
+            <div class="wheel wheel-one"></div>
+
+            <div class="wheel wheel-two"></div>
+
         </div>
+
+    </div>
+
+    </div>
 
     </section>
 
@@ -576,8 +646,8 @@
 
     </footer>
 
-<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-<script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/3d.js') }}"></script>
 </body>
 
 </html>

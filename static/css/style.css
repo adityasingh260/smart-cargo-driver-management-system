@@ -1219,3 +1219,144 @@ textarea:focus {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     transform: translateY(-1px);
 }
+/* ==========================================
+   MODERN CUSTOMER NAVBAR
+   ========================================== */
+
+.navbar {
+    width: 100%;
+    min-height: 70px;
+    padding: 0 35px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    position: relative;
+    z-index: 1000;
+
+    background: rgba(20, 20, 20, 0.72);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+}
+
+
+/* LOGO */
+
+.navbar .logo {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+
+    transition: 0.3s ease;
+}
+
+.navbar .logo:hover {
+    transform: translateY(-1px);
+}
+
+
+/* NAV LINKS */
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+/* EACH LINK */
+
+.nav-links a {
+    position: relative;
+
+    padding: 10px 14px;
+
+    color: inherit;
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    border-radius: 9px;
+
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease,
+        color 0.25s ease;
+}
+
+
+/* HOVER */
+
+.nav-links a:hover {
+    background: rgba(255, 255, 255, 0.10);
+    transform: translateY(-2px);
+}
+
+
+/* UNDERLINE ANIMATION */
+
+.nav-links a::after {
+    content: "";
+
+    position: absolute;
+    left: 50%;
+    bottom: 4px;
+
+    width: 0;
+    height: 2px;
+
+    background: currentColor;
+
+    transform: translateX(-50%);
+
+    transition: width 0.25s ease;
+}
+
+.nav-links a:hover::after {
+    width: 55%;
+}
+
+
+/* LOGOUT */
+
+.nav-links .logout-link {
+    margin-left: 5px;
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.nav-links .logout-link:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+    .navbar {
+        padding: 12px 18px;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .nav-links a {
+        font-size: 13px;
+        padding: 8px 10px;
+    }
+
+}

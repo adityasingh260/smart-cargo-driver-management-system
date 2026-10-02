@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Messages - Smart Cargo</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .messages-page {
+            min-height: 100vh;
+            padding: 40px 25px;
+        }
+
+        .messages-container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .messages-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .messages-header h1 {
+            margin-bottom: 8px;
+        }
+
+        .messages-header p {
+            opacity: 0.75;
+        }
+
+        .messages-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .messages-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        .messages-table th,
+        .messages-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .messages-table th {
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .messages-table td {
+            vertical-align: top;
+        }
+
+        .message-cell {
+            max-width: 350px;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        /* STATUS */
+
+        .message-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .unread {
+            background: rgba(255, 193, 7, 0.18);
+        }
+
+        .read {
+            background: rgba(40, 167, 69, 0.18);
+        }
+
+        .empty-messages {
+            text-align: center;
+            padding: 50px 20px;
+            opacity: 0.75;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 25px;
+            text-decoration: none;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="messages-page">
+
+        <div class="messages-container">
+
+
+            <!-- HEADER -->
+
+            <div class="messages-header">
+
+                <h1>📩 Contact Messages</h1>
+
+                <p>
+                    View messages submitted by customers and drivers.
+                </p>
+
+            </div>
+
+
+            {% if messages %}
+
+
+            <div class="messages-table-wrapper">
+
+
+                <table class="messages-table">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Message ID
+                            </th>
+
+                            <th>
+                                User
+                            </th>
+
+                            <th>
+                                Role
+                            </th>
+
+                            <th>
+                                Subject
+                            </th>
+
+                            <th>
+                                Message
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Date & Time
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        {% for message in messages %}
+
+
+                        <tr>
+
+
+                            <!-- MESSAGE ID -->
+
+                            <td>
+                                #{{ message.message_id }}
+                            </td>
+
+
+                            <!-- USER -->
+
+                            <td>
+
+                                {{ message.name }}
+
+                                <br>
+
+                                <small>
+                                    {{ message.email }}
+                                </small>
+
+                            </td>
+
+
+                            <!-- ROLE -->
+
+                            <td>
+                                {{ message.role|capitalize }}
+                            </td>
+
+
+                            <!-- SUBJECT -->
+
+                            <td>
+                                {{ message.subject }}
+                            </td>
+
+
+                            <!-- MESSAGE -->
+
+                            <td class="message-cell">
+                                {{ message.message }}
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+                                {% if message.status == "Unread" %}
+
+                                    <span class="message-status unread">
+                                        Unread
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="message-status read">
+                                        ✓ Read
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- DATE & TIME -->
+
+                            <td>
+                                {{ message.created_at }}
+                            </td>
+
+
+                        </tr>
+
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+            {% else %}
+
+
+            <div class="empty-messages">
+
+                <h2>No Messages Found</h2>
+
+                <p>
+                    No contact messages have been received yet.
+                </p>
+
+            </div>
+
+
+            {% endif %}
+
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="back-btn"
+            >
+                ← Back to Admin Dashboard
+            </a>
+
+
+        </div>
+
+    </div>
+
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+
+
+</body>
+
+</html>
+

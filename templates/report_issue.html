@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Report Issue - Smart Cargo</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .report-page {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .report-card {
+            width: 100%;
+            max-width: 600px;
+            padding: 35px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .report-card h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .report-subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        .report-form label {
+            display: block;
+            margin: 18px 0 8px;
+            font-weight: 600;
+        }
+
+        .report-form input,
+        .report-form select,
+        .report-form textarea {
+            width: 100%;
+            padding: 13px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.15);
+            color: inherit;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .report-form textarea {
+            resize: vertical;
+            min-height: 130px;
+        }
+
+        .report-form input:focus,
+        .report-form select:focus,
+        .report-form textarea:focus {
+            border-color: #888;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.12);
+        }
+
+        .report-form select option {
+            background: #222;
+            color: white;
+        }
+
+        .report-btn {
+            width: 100%;
+            margin-top: 25px;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .report-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .back-home {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="report-page">
+
+        <div class="report-card">
+
+            <h1>⚠️ Report an Issue</h1>
+
+            <p class="report-subtitle">
+                Problem hai? Humein batayein, hum aapki problem solve karne
+                ki poori koshish karenge.
+            </p>
+
+            <form method="POST" class="report-form">
+
+                <!-- ISSUE TYPE -->
+
+                <label for="issue_type">Issue Type</label>
+
+                <select name="issue_type" id="issue_type" required>
+                    <option value="">Select Issue</option>
+                    <option value="Booking">Booking Issue</option>
+                    <option value="Driver">Driver Issue</option>
+                    <option value="Vehicle">Vehicle Issue</option>
+                    <option value="Payment">Payment Issue</option>
+                    <option value="Other">Other</option>
+                </select>
+
+
+                <!-- BOOKING ID -->
+
+                <label for="booking_id">Booking ID</label>
+
+                <select name="booking_id" id="booking_id">
+
+                    <option value="">
+                        -- Select Booking (Optional) --
+                    </option>
+
+                    {% for booking in bookings %}
+
+                    <option value="{{ booking.booking_id }}">
+                        Booking #{{ booking.booking_id }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <!-- DESCRIPTION -->
+
+                <label for="description">Describe Your Problem</label>
+
+                <textarea id="description"
+                    name="description"
+                    placeholder="Tell us about your issue..."
+                    required></textarea>
+
+
+                <!-- SUBMIT -->
+
+                <button type="submit" class="report-btn">
+                    Submit Report
+                </button>
+
+            </form>
+
+            <a href="javascript:history.back()" class="back-home">
+                ← Go Back
+            </a>
+
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+
+</body>
+
+</html>
